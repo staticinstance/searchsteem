@@ -14,7 +14,7 @@ class App extends Component {
     this.state = {
       limit: 10,
       query: '',
-      type: 'Created',
+      type: 'Trending',
       posts: [],
       nsfw: false,
       loading: false,
