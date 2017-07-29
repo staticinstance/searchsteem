@@ -20,6 +20,7 @@ class App extends Component {
       loading: false,
     };
   }
+
   compare(a,b) {
     if (a.rshares > b.rshares)
       return -1;
@@ -94,7 +95,16 @@ componentWillMount(){
     });
     //this.searchSteemit();
   }
-
+  getTitle(post){
+    let title = post.active_votes.sort(this.compare).slice(0, 11).reduce((voters, vote, i) => {
+      voters = `${voters}${vote.voter}${(post.active_votes.length - 2 >= i) ? '\n' : ''} `.replace(/ /g,'');
+      return voters;
+    }, post.active_votes.length > 10 ? "\n🏆 Top Voters\n\n" : "");
+    if(post.active_votes.length > 10){
+      title = `${title}\n${post.active_votes.length - 10} more not shown`
+    }
+    return title;
+  }
   renderPosts(){
     const { posts } = this.state;
     const type = this.state.type === "Created" ? "new" : this.state.type.toLowerCase();
@@ -119,21 +129,17 @@ componentWillMount(){
                         }
                       </td>
                       <td style={{position: "relative", verticalAlign: "middle"}}>
-                        <div style={{position: "absolute", top: 5}}>
-                    <h3 style={{marginTop: 0,width: 800, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
-                      <a style={{color: "#000000", textDecoration: "none"}} href={`https://steemit.com${post.url}`} target="_blank">{post.title}</a>
-                    </h3>
-                    <div>
-                      <span title={`$${post.pending_payout_value.replace(' SBD', '')} potential payout`}>${post.pending_payout_value.replace('SBD', '')}</span> | <span style={{cursor: "pointer"}} title={
-                        post.active_votes.sort(this.compare).reduce((voters, vote, i) => {
-                        voters = `${voters}${vote.voter} ${(post.active_votes.length - 2 >= i) ? '\n' : ''} `;
-                        return voters;
-                      }, "")}>{post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"}</span> | {post.children} {post.children === 1 ? "comment" : "comments"} | <a href={`https://steemit.com${post.url}`} target="_blank">view post on steemit</a>
-                  </div>
-                  <div style={{width: "auto"}}>
-                    posted by <a href={`https://steemit.com/@${post.author}`} target="_blank">{`@${post.author}`}</a> (<a href={`http://steem.cool/@${post.author}`} target="_blank">steem.cool</a> | <a href={`http://steemd.com/@${post.author}`} target="_blank">steemd.com</a> | <a href={`http://steemdb.com/@${post.author}`} target="_blank">steemdb.com</a>) in <a href={`http://steemit.com/${this.state.type.toLowerCase()}/${tags && tags[0] ? tags[0] : '?' }`} target="_blank"> {tags && tags[0] ? tags[0] : '?'}</a> on {moment(post.created).format('MMMM Do YYYY, h:mm:ss a')}
-                  </div>
-                </div>
+                        <div style={{position: "absolute", top: 3}}>
+                          <div style={{paddingBottom: 20, fontWeight: "bold", fontSize: 16, marginTop: 0, width: 800, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
+                            <a style={{color: "#000000", textDecoration: "none"}} href={`https://steemit.com${post.url}`} target="_blank">{post.title}</a>
+                          </div>
+                          <div style={{paddingBottom: 10}}>
+                            <span title={`$${post.pending_payout_value.replace(' SBD', '')} potential payout`}>${post.pending_payout_value.replace('SBD', '')}</span> | <span style={{cursor: "pointer"}} title={this.getTitle(post)}>{post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"}</span> | {post.children} {post.children === 1 ? "comment" : "comments"} | <a href={`https://steemit.com${post.url}`} target="_blank">view post on steemit</a>
+                          </div>
+                          <div style={{width: "auto"}}>
+                            posted by <a href={`https://steemit.com/@${post.author}`} target="_blank">{`@${post.author}`}</a> (<a href={`http://steem.cool/@${post.author}`} target="_blank">steem.cool</a> | <a href={`http://steemd.com/@${post.author}`} target="_blank">steemd.com</a> | <a href={`http://steemdb.com/@${post.author}`} target="_blank">steemdb.com</a>) in <a href={`http://steemit.com/${this.state.type.toLowerCase()}/${tags && tags[0] ? tags[0] : '?' }`} target="_blank"> {tags && tags[0] ? tags[0] : '?'}</a> on {moment(post.created).format('MMMM Do YYYY, h:mm:ss a')}
+                          </div>
+                        </div>
                 </td>
               </tr>)}
       </tbody></table>)})
