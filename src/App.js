@@ -17,6 +17,7 @@ class App extends Component {
       type: 'Created',
       posts: [],
       nsfw: false,
+      loading: false,
     };
   }
   compare(a,b) {
@@ -26,46 +27,60 @@ class App extends Component {
       return 1;
     return 0;
   }
-shouldComponentUpdate(nextProps, nextState){
-  if(!deepEqual(nextState, this.state)){
-    return true;
-  } else {
-    return false;
+
+  shouldComponentUpdate(nextProps, nextState){
+    if(!deepEqual(nextState.limit, this.state.limit) ||
+       !deepEqual(nextState.query, this.state.query) ||
+       !deepEqual(nextState.type, this.state.type) ||
+       !deepEqual(nextState.nsfw, this.state.nsfw) ||
+       !deepEqual(nextState.posts, this.state.posts) ||
+       !deepEqual(nextState.loading, this.state.loading)){
+      return true;
+    } else {
+      return false;
+    }
   }
-}
+
+  componentDidUpdate(nextProps, nextState){
+    if(!deepEqual(nextState.limit, this.state.limit) ||
+       !deepEqual(nextState.query, this.state.query) ||
+       !deepEqual(nextState.type, this.state.type) ||
+       !deepEqual(nextState.nsfw, this.state.nsfw)){
+         this.searchSteemit();
+    }
+  }
 
 componentWillMount(){
   this.searchSteemit();
 }
-componentDidUpdate(){
-  this.searchSteemit();
-}
+
   searchSteemit(){
+    this.setState({loading: true});
     steem.api[`getDiscussionsBy${this.state.type}`]({
       tag: this.state.query,
       limit: this.state.limit
-    }, (error, result) => this.setState({posts: result.map(post => post)}));
+    }, (error, result) => {this.setState({loading: false, posts: result.map(post => post)}); this.forceUpdate()});
   }
 
   handleTypeChange(value){
     this.setState({
       type: value
     });
-    this.searchSteemit();
+    //this.searchSteemit();
   }
 
   handleNSFWChange(value){
     this.setState({
       nsfw: value === 'true'
     });
-    this.searchSteemit();
+    //this.searchSteemit();
   }
 
   handleLimitChange(value){
     this.setState({
       limit: value
     });
-    this.searchSteemit();
+    //this.searchSteemit();
   }
 
   handleQueryChange(value){
@@ -73,7 +88,7 @@ componentDidUpdate(){
     this.setState({
       query: value
     });
-    this.searchSteemit();
+    //this.searchSteemit();
   }
 
   renderPosts(){
@@ -121,6 +136,13 @@ componentDidUpdate(){
     }</div>);
   }
 
+  getLoadingMessage(){
+
+    return this.state.query
+      ? <div style={{padding: 10, fontSize: 14}}>Loading {this.state.type === "Created" ? "new" : this.state.type.toLowerCase()} results for "{this.state.query}"...</div>
+      : <div style={{padding: 10, fontSize: 14}}>Loading {this.state.type === "Created" ? "new" : this.state.type.toLowerCase()} posts...</div>
+
+  };
   render() {
     return (
       <div style={{width: window.screen.width, paddingBottom: 0, overflow: "hidden"}}>
@@ -151,24 +173,30 @@ componentDidUpdate(){
             </span>
           </span>
           </div>
-          <div style={{borderBottom: "1px solid lightgray"}}>
-            {this.state.query && this.state.posts.length ? (<div style={{padding: 10, fontSize: 14}}>
-              Viewing results for posts tagged with "{this.state.query}" that are {this.state.type === "Created" ? "new" : this.state.type.toLowerCase()} on steemit
-            <div>View results on steemit (<a title="view on steemit" href={`https://steemit.com/created/${this.state.query.toLowerCase()}`} target="_blank">
-              new
-            </a> | <a title="view on steemit" href={`https://steemit.com/hot/${this.state.query.toLowerCase()}`} target="_blank">
-              hot
-            </a> | <a title="view on steemit" href={`https://steemit.com/trending/${this.state.query.toLowerCase()}`} target="_blank">
-              trending
-            </a> | <a title="view on steemit" href={`https://steemit.com/promoted/${this.state.query.toLowerCase()}`} target="_blank">
-              promoted
-            </a>)</div></div>) : this.state.query ? <div style={{padding: 10}}>No {this.state.type} results found for "{this.state.query}"</div> : <div style={{padding: 10}}>{this.state.type === "Created" ? "New" : this.state.type} posts</div>}
 
-          </div>
-        <div style={{position: "absolute", top: this.state.query && this.state.posts.length ? 109 : 95, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
-          {this.renderPosts()}
-        </div>
-      </div>
+            {this.state.loading === true
+              ? this.getLoadingMessage()
+              : <div>
+                  <div style={{borderBottom: "1px solid lightgray"}}>
+                    {this.state.query && this.state.posts.length ? (<div style={{padding: 10, fontSize: 14}}>
+                      Showing results for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>
+                    <div>View results for <span style={{fontWeight: "bold"}}>{this.state.query}</span> on steemit (<a title="view on steemit" href={`https://steemit.com/created/${this.state.query.toLowerCase()}`} target="_blank">
+                      new
+                    </a> | <a title="view on steemit" href={`https://steemit.com/hot/${this.state.query.toLowerCase()}`} target="_blank">
+                      hot
+                    </a> | <a title="view on steemit" href={`https://steemit.com/trending/${this.state.query.toLowerCase()}`} target="_blank">
+                      trending
+                    </a> | <a title="view on steemit" href={`https://steemit.com/promoted/${this.state.query.toLowerCase()}`} target="_blank">
+                      promoted
+                    </a>)</div></div>) : this.state.query ? <div style={{padding: 10}}>No {this.state.type === "Created" ? "new" : this.state.type.toLowerCase()} results found for "{this.state.query}"</div> : <div style={{padding: 10}}>{this.state.type === "Created" ? "New" : this.state.type} posts</div>}
+
+                  </div>
+                <div style={{position: "absolute", top: this.state.query && this.state.posts.length ? 109 : 95, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
+                  {this.renderPosts()}
+                </div>
+            </div>
+      }
+    </div>
     );
   }
 }
