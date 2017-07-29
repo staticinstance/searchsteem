@@ -151,8 +151,8 @@ componentDidUpdate(){
                 <option selected={this.state.nsfw} value="true">Show NSFW Posts</option>
               </select>
             </span>
-            <span style={{fontSize: 12, float: "right", paddingTop: 10, paddingRight: 20}}>
-              created by <a style={{textDecoration: "none"}} href="https://steemit.com/@staticinstance" target="_blank">@staticinstance</a>
+            <span style={{color: "#FFFFFF", fontSize: 12, float: "right", paddingTop: 10, paddingRight: 20}}>
+              created by <a style={{color: "#FFFFFF", textDecoration: "none"}} href="https://steemit.com/@staticinstance" target="_blank">@staticinstance</a>
             </span>
           </span>
         </div>
