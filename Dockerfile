@@ -11,7 +11,6 @@ ARG NODE_ENV=production
 
 RUN npm install -g pushstate-server
 RUN npm run build
-RUN pushstate-server build
-CMD open http://localhost:9000
+CMD pushstate-server build
 
 EXPOSE 80
