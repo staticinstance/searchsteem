@@ -50,6 +50,10 @@ class App extends Component {
     }
   }
 
+  componentDidMount(){
+    this.searchInput.focus()
+  }
+
 componentWillMount(){
   this.searchSteemit();
 }
@@ -137,12 +141,11 @@ componentWillMount(){
   }
 
   getLoadingMessage(){
-
     return this.state.query
-      ? <div style={{padding: 10, fontSize: 14}}>Loading {this.state.type === "Created" ? "new" : this.state.type.toLowerCase()} results for "{this.state.query}"...</div>
+      ? <div style={{padding: 10, fontSize: 14}}>Loading results for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>...</div>
       : <div style={{padding: 10, fontSize: 14}}>Loading {this.state.type === "Created" ? "new" : this.state.type.toLowerCase()} posts...</div>
+  }
 
-  };
   render() {
     return (
       <div style={{width: window.screen.width, paddingBottom: 0, overflow: "hidden"}}>
@@ -151,7 +154,7 @@ componentWillMount(){
             <img style={{height: 35, verticalAlign: "middle", paddingRight: 10}} src={logo} />
           </span>
           <span>
-              <input style={{width: 300}} onChange={(e)=>this.handleQueryChange(e.target.value)} type="text" value={this.state.query} placeholder="Search a Tag (one word only)" />
+              <input ref={(input) => { this.searchInput = input; }} style={{width: 300}} onChange={(e)=>this.handleQueryChange(e.target.value)} type="text" value={this.state.query} placeholder="Search a Tag (one word only)" />
             <span style={{position: "relative", left: 10}}><select onChange={(e)=>this.handleTypeChange(e.target.value)}>
                 <option value="Created">Search New Posts</option>
               <option value="Hot">Search Hot Posts</option>
@@ -177,8 +180,8 @@ componentWillMount(){
             {this.state.loading === true
               ? this.getLoadingMessage()
               : <div>
-                  <div style={{borderBottom: "1px solid lightgray"}}>
-                    {this.state.query && this.state.posts.length ? (<div style={{padding: 10, fontSize: 14}}>
+                  <div style={{borderBottom: "1px solid lightgray", padding: 10, fontSize: 14}}>
+                    {this.state.query && this.state.posts.length ? (<div>
                       Showing results for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>
                     <div>View results for <span style={{fontWeight: "bold"}}>{this.state.query}</span> on steemit (<a title="view on steemit" href={`https://steemit.com/created/${this.state.query.toLowerCase()}`} target="_blank">
                       new
@@ -188,7 +191,7 @@ componentWillMount(){
                       trending
                     </a> | <a title="view on steemit" href={`https://steemit.com/promoted/${this.state.query.toLowerCase()}`} target="_blank">
                       promoted
-                    </a>)</div></div>) : this.state.query ? <div style={{padding: 10}}>No {this.state.type === "Created" ? "new" : this.state.type.toLowerCase()} results found for "{this.state.query}"</div> : <div style={{padding: 10}}>{this.state.type === "Created" ? "New" : this.state.type} posts</div>}
+                    </a>)</div></div>) : this.state.query ? <div>Couldn't find any <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span></div> : <div>{this.state.type === "Created" ? "New" : this.state.type} posts</div>}
 
                   </div>
                 <div style={{position: "absolute", top: this.state.query && this.state.posts.length ? 109 : 95, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
