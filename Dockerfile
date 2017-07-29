@@ -5,6 +5,13 @@ WORKDIR /app
 COPY . /app
 RUN npm install
 
-CMD npm start
 
-EXPOSE 3000
+
+ARG NODE_ENV=production
+
+RUN npm install -g pushstate-server
+RUN npm run build
+RUN pushstate-server build
+CMD open http://localhost:9000
+
+EXPOSE 80
