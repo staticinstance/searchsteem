@@ -120,11 +120,11 @@ componentDidUpdate(){
   render() {
     console.log(this.state.posts)
     return (
-      <div>
+      <div style={{width: window.screen.width}}>
         <div style={{padding: 10, borderBottom: "1px solid lightgray", width: window.screen.width}}>
           <span>
             <img style={{height: 40, verticalAlign: "middle", paddingRight: 10}} src={logo} />
-        </span>
+          </span>
           <span>
               <input style={{width: 300}} onChange={(e)=>this.handleQueryChange(e.target.value)} type="text" value={this.state.query} placeholder="Search a Tag (one word only)" />
             <select onChange={(e)=>this.handleTypeChange(e.target.value)}>
@@ -142,6 +142,9 @@ componentDidUpdate(){
                 <option selected={this.state.nsfw} value="false">Hide NSFW Posts</option>
                 <option selected={this.state.nsfw} value="true">Show NSFW Posts</option>
               </select>
+          </span>
+          <span style={{float: "right", paddingTop: 10, paddingRight: 20}}>
+            <a style={{textDecoration: "none"}} href="https://steemit.com/@staticinstance" target="_blank">@staticinstance</a>
           </span>
         </div>
         {this.renderPosts()}
