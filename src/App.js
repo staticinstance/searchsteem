@@ -71,7 +71,6 @@ componentDidUpdate(){
   }
 
   renderPosts(){
-    console.log('posts', this.state.posts)
     const { posts } = this.state;
     const type = this.state.type === "Created" ? "new" : this.state.type.toLowerCase();
     return (<div style={{width: "100%", overflowX: "hidden"}}>
