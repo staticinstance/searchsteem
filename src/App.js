@@ -97,7 +97,7 @@ componentWillMount(){
   }
   getTitle(post){
     let title = post.active_votes.sort(this.compare).slice(0, 11).reduce((voters, vote, i) => {
-      voters = `${voters}${vote.voter}${(post.active_votes.length - 2 >= i) ? '\n' : ''} `.replace(/ /g,'');
+      voters = `${voters}${vote.voter}${(post.active_votes.length - 2 >= i) ? '\n' : ''}`;
       return voters;
     }, post.active_votes.length > 10 ? "\n🏆 Top Voters\n\n" : "");
     if(post.active_votes.length > 10){
