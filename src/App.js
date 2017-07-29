@@ -5,6 +5,7 @@ import marked from 'marked';
 import moment from 'moment';
 import steem from 'steem';
 import logo from './assets/steem.png';
+import defaultPhoto from './assets/no-photo.png';
 
 class App extends Component {
 
@@ -99,8 +100,8 @@ componentDidUpdate(){
                         <td style={{position: "relative", height: 100, maxHeight: 100, maxWidth: 100, width: 100, overflow: "hidden"}}>
                         {
                           image
-                            ? <a href={`https://steemit.com${post.url}`} target="_blank"><img style={{position: "absolute", top: 5, maxHeight: 80}} src={image[0]}/></a>
-                            : null
+                            ? <a href={`https://steemit.com${post.url}`} target="_blank"><img title={post.title} style={{position: "absolute", top: 5, maxHeight: 80}} src={image[0]}/></a>
+                            : <a href={`https://steemit.com${post.url}`} target="_blank"><img title={post.title} style={{position: "absolute", top: 5, maxHeight: 80}} src={defaultPhoto}/></a>
                         }
                       </td>
                       <td style={{position: "relative", verticalAlign: "middle"}}>
