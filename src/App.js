@@ -71,6 +71,7 @@ componentDidUpdate(){
   }
 
   renderPosts(){
+    console.log('posts', this.state.posts)
     const { posts } = this.state;
     const type = this.state.type === "Created" ? "new" : this.state.type.toLowerCase();
     return (<div style={{width: "100%", overflowX: "hidden"}}>
@@ -99,7 +100,7 @@ componentDidUpdate(){
                       <a style={{color: "#000000", textDecoration: "none"}} href={`https://steemit.com${post.url}`} target="_blank">{post.title}</a>
                     </h3>
                     <div>
-                      ${post.pending_payout_value} | {post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"} | {post.replies.length} {post.replies.length === 1 ? "comment" : "comments"} | <a href={`https://steemit.com${post.url}`} target="_blank">view post on steemit</a>
+                      <span title={`${post.pending_payout_value.replace('SBD', '')} potential payout`}>${post.pending_payout_value.replace('SBD', '')}</span> | {post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"} | {post.children} {post.children === 1 ? "comment" : "comments"} | <a href={`https://steemit.com${post.url}`} target="_blank">view post on steemit</a>
                   </div>
                   <div style={{width: "auto"}}>
                     posted by <a href={`https://steemit.com/@${post.author}`} target="_blank">{`@${post.author}`}</a> (<a href={`http://steem.cool/@${post.author}`} target="_blank">steem.cool</a> | <a href={`http://steemd.com/@${post.author}`} target="_blank">steemd.com</a> | <a href={`http://steemdb.com/@${post.author}`} target="_blank">steemdb.com</a>) in <a href={`http://steemit.com/${this.state.type.toLowerCase()}/${tags && tags[0] ? tags[0] : '?' }`} target="_blank"> {tags && tags[0] ? tags[0] : '?'}</a> on {moment(post.active).format('MMMM Do YYYY, h:mm:ss a')}
@@ -143,7 +144,7 @@ componentDidUpdate(){
           </div>
           <div style={{borderBottom: "1px solid lightgray"}}>
             {this.state.query && this.state.posts.length ? (<div style={{padding: 10, fontSize: 14}}>
-              Results for posts tagged with "{this.state.query}" that are {this.state.type === "Created" ? "new" : this.state.type.toLowerCase()} on steemit
+              Viewing results for posts tagged with "{this.state.query}" that are {this.state.type === "Created" ? "new" : this.state.type.toLowerCase()} on steemit
             <div>View results on steemit (<a title="view on steemit" href={`https://steemit.com/created/${this.state.query.toLowerCase()}`} target="_blank">
               new
             </a> | <a title="view on steemit" href={`https://steemit.com/hot/${this.state.query.toLowerCase()}`} target="_blank">
