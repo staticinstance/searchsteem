@@ -84,7 +84,7 @@ componentDidUpdate(){
             trending
           </a> | <a title="view on steemit" href={`https://steemit.com/promoted/${this.state.query.toLowerCase()}`} target="_blank">
             promoted
-          </a>)</div></div>) : this.state.query ? <div style={{padding: 10}}>No {type} results found for "{this.state.query}"</div> : null}
+          </a>)</div></div>) : this.state.query ? <div style={{padding: 10}}>No {type} results found for "{this.state.query}"</div> : <div style={{padding: 10}}>{this.state.type === "Created" ? "New" : this.state.type} posts</div>}
             {posts.map((post, i) => {
             const metadata = JSON.parse(post.json_metadata);
             const image = metadata.image;
