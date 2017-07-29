@@ -45,7 +45,6 @@ componentDidUpdate(){
       type: value
     });
     this.searchSteemit();
-    console.log('type', value)
   }
 
   handleNSFWChange(value){
@@ -53,7 +52,6 @@ componentDidUpdate(){
       nsfw: value === 'true'
     });
     this.searchSteemit();
-    console.log('type', value)
   }
 
   handleLimitChange(value){
@@ -61,7 +59,6 @@ componentDidUpdate(){
       limit: value
     });
     this.searchSteemit();
-    console.log('limit', value)
   }
 
   handleQueryChange(value){
@@ -70,7 +67,6 @@ componentDidUpdate(){
       query: value
     });
     this.searchSteemit();
-    console.log('query', value)
   }
 
   renderPosts(){
@@ -126,7 +122,6 @@ componentDidUpdate(){
   }
 
   render() {
-    console.log(this.state.posts)
     return (
       <div style={{width: window.screen.width, paddingBottom: 0, overflow: "hidden"}}>
         <div style={{position: "relative", height: "100%", padding: 10, borderBottom: "1px solid #1a5099", width: window.screen.width, backgroundColor: "#4ba2f2"}}>
