@@ -1,0 +1,22 @@
+{
+  "name": "searchsteem",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "deep-equal": "^1.0.1",
+    "marked": "^0.3.6",
+    "moment": "^2.18.1",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "steem": "^0.6.2"
+  },
+  "devDependencies": {
+    "react-scripts": "1.0.10"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
