@@ -108,7 +108,7 @@ componentDidUpdate(){
                       ${post.pending_payout_value} | {post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"} | {post.replies.length} {post.replies.length === 1 ? "comment" : "comments"} | <a href={`https://steemit.com${post.url}`} target="_blank">view post on steemit</a>
                   </div>
                   <div>
-                    posted by <a href={`https://steemit.com/@${post.author}`} target="_blank">{`@${post.author}`}</a> in <a href={`https://steemit.com/${this.state.type.toLowerCase()}/${tags && tags[0] ? tags[0] : '?' }`} target="_blank"> {tags && tags[0] ? tags[0] : '?'}</a> on {moment(post.active).format('LLLL')}
+                    posted by <a href={`https://steemit.com/@${post.author}`} target="_blank">{`@${post.author}`}</a> (<a href={`http://steem.cool/@${post.author}`} target="_blank">steem.cool</a> | <a href={`http://steemd.com/@${post.author}`} target="_blank">steemd.com</a> | <a href={`http://steemdb.com/@${post.author}`} target="_blank">steemdb.com</a>) in <a href={`http://steemit.com/${this.state.type.toLowerCase()}/${tags && tags[0] ? tags[0] : '?' }`} target="_blank"> {tags && tags[0] ? tags[0] : '?'}</a> on {moment(post.active).format('LLLL')}
                   </div>
                 </div>
                 </td>
