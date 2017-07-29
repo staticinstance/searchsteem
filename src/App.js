@@ -194,7 +194,7 @@ componentWillMount(){
                     </a>)</div></div>) : this.state.query ? <div>Couldn't find any <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span></div> : <div>{this.state.type === "Created" ? "New" : this.state.type} posts</div>}
 
                   </div>
-                <div style={{position: "absolute", top: this.state.query && this.state.posts.length ? 109 : 95, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
+                <div style={{position: "absolute", top: this.state.query && this.state.posts.length ? 109 : 93, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
                   {this.renderPosts()}
                 </div>
             </div>
