@@ -126,7 +126,7 @@ componentWillMount(){
                     <div>
                       <span title={`$${post.pending_payout_value.replace(' SBD', '')} potential payout`}>${post.pending_payout_value.replace('SBD', '')}</span> | <span style={{cursor: "pointer"}} title={
                         post.active_votes.sort(this.compare).reduce((voters, vote, i) => {
-                        voters = `${voters} ${vote.voter} ${(post.active_votes.length - 2 >= i) ? ' |' : ''} `;
+                        voters = `${voters}${vote.voter} ${(post.active_votes.length - 2 >= i) ? '\n' : ''} `;
                         return voters;
                       }, "")}>{post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"}</span> | {post.children} {post.children === 1 ? "comment" : "comments"} | <a href={`https://steemit.com${post.url}`} target="_blank">view post on steemit</a>
                   </div>
