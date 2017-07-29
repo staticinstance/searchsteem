@@ -74,17 +74,6 @@ componentDidUpdate(){
     const { posts } = this.state;
     const type = this.state.type === "Created" ? "new" : this.state.type.toLowerCase();
     return (<div style={{width: "100%", overflowX: "hidden"}}>
-          {this.state.query && posts.length ? (<div style={{padding: 10, fontSize: 14}}>
-            results for posts tagged with "{this.state.query}" that are {this.state.type === "Created" ? "new" : this.state.type.toLowerCase()} on steemit
-          <div>view results on steemit (<a title="view on steemit" href={`https://steemit.com/created/${this.state.query.toLowerCase()}`} target="_blank">
-            new
-          </a> | <a title="view on steemit" href={`https://steemit.com/hot/${this.state.query.toLowerCase()}`} target="_blank">
-            hot
-          </a> | <a title="view on steemit" href={`https://steemit.com/trending/${this.state.query.toLowerCase()}`} target="_blank">
-            trending
-          </a> | <a title="view on steemit" href={`https://steemit.com/promoted/${this.state.query.toLowerCase()}`} target="_blank">
-            promoted
-          </a>)</div></div>) : this.state.query ? <div style={{padding: 10}}>No {type} results found for "{this.state.query}"</div> : <div style={{padding: 10}}>{this.state.type === "Created" ? "New" : this.state.type} posts</div>}
             {posts.map((post, i) => {
             const metadata = JSON.parse(post.json_metadata);
             const image = metadata.image;
@@ -151,8 +140,22 @@ componentDidUpdate(){
               created by <a style={{color: "#FFFFFF", textDecoration: "none"}} href="https://steemit.com/@staticinstance" target="_blank">@staticinstance</a>
             </span>
           </span>
-        </div>
-        <div style={{position: "absolute", top: 60, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
+          </div>
+          <div style={{borderBottom: "1px solid lightgray"}}>
+            {this.state.query && this.state.posts.length ? (<div style={{padding: 10, fontSize: 14}}>
+              results for posts tagged with "{this.state.query}" that are {this.state.type === "Created" ? "new" : this.state.type.toLowerCase()} on steemit
+            <div>view results on steemit (<a title="view on steemit" href={`https://steemit.com/created/${this.state.query.toLowerCase()}`} target="_blank">
+              new
+            </a> | <a title="view on steemit" href={`https://steemit.com/hot/${this.state.query.toLowerCase()}`} target="_blank">
+              hot
+            </a> | <a title="view on steemit" href={`https://steemit.com/trending/${this.state.query.toLowerCase()}`} target="_blank">
+              trending
+            </a> | <a title="view on steemit" href={`https://steemit.com/promoted/${this.state.query.toLowerCase()}`} target="_blank">
+              promoted
+            </a>)</div></div>) : this.state.query ? <div style={{padding: 10}}>No {this.state.type} results found for "{this.state.query}"</div> : <div style={{padding: 10}}>{this.state.type === "Created" ? "New" : this.state.type} posts</div>}
+
+          </div>
+        <div style={{position: "absolute", top: 95, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
           {this.renderPosts()}
         </div>
       </div>
