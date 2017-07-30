@@ -12,7 +12,6 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      limit: 10,
       query: '',
       type: 'Trending',
       posts: [],
@@ -32,8 +31,7 @@ class App extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState){
-    if(!deepEqual(nextState.limit, this.state.limit) ||
-       !deepEqual(nextState.query, this.state.query) ||
+    if(!deepEqual(nextState.query, this.state.query) ||
        !deepEqual(nextState.type, this.state.type) ||
        !deepEqual(nextState.nsfw, this.state.nsfw) ||
        !deepEqual(nextState.posts, this.state.posts) ||
@@ -45,8 +43,7 @@ class App extends Component {
   }
 
   componentDidUpdate(nextProps, nextState){
-    if(!deepEqual(nextState.limit, this.state.limit) ||
-       !deepEqual(nextState.query, this.state.query) ||
+    if(!deepEqual(nextState.query, this.state.query) ||
        !deepEqual(nextState.type, this.state.type) ||
        !deepEqual(nextState.nsfw, this.state.nsfw)){
          this.searchSteemit();
@@ -65,7 +62,7 @@ class App extends Component {
     this.setState({loading: true});
     steem.api[`getDiscussionsBy${this.state.type}`]({
       tag: this.state.query,
-      limit: this.state.limit
+      limit: 100
     }, (error, result) => {this.setState({loading: false, posts: result.map(post => post)}); this.forceUpdate()});
   }
 
@@ -75,15 +72,9 @@ class App extends Component {
     });
   }
 
-  handleNSFWChange(value){
+  toggleNSFW(){
     this.setState({
-      nsfw: value === 'true'
-    });
-  }
-
-  handleLimitChange(value){
-    this.setState({
-      limit: value
+      nsfw: !this.state.nsfw
     });
   }
 
@@ -105,45 +96,86 @@ class App extends Component {
     return title;
   }
 
+  renderNSFWToggle(style){
+    return <span
+      style={
+        this.state.nsfw
+          ? {
+              cursor: 'pointer',
+              position: 'relative',
+              left: 3,
+              top: -2,
+              padding: 5,
+              fontSize: 8,
+              border: '1px solid #c00',
+              borderRadius: '5%',
+              backgroundColor: '#FFF',
+              color: '#c00'}
+          : {
+              cursor: 'pointer',
+              position: 'relative',
+              left: 3,
+              top: -2,
+              marginBottom: 5,
+              marginLeft: 10,
+              padding: 5,
+              fontSize: 8,
+              color: '#FFF',
+              border: '1px solid #FFF',
+              borderRadius: '5%',
+
+          }}
+      title={`Posts tagged with "Not Safe For Work" are currently being ${this.state.nsfw ? 'shown' : 'hidden'}.  Click to ${this.state.nsfw ? 'show' : 'hide'} them.`}
+      onClick={()=>this.toggleNSFW()}>
+      {`${this.state.nsfw ? 'hide' : 'show'} nsfw posts`}
+    </span>
+  }
+
   renderPosts(){
     const { posts } = this.state;
     const type = this.state.type === "Created" ? "new" : this.state.type.toLowerCase();
-    return (<div style={{width: "100%", overflowX: "hidden"}}>
-            {posts.map((post, i) => {
-            const metadata = JSON.parse(post.json_metadata);
-            const image = metadata.image;
-            const tags = metadata.tags;
-            return  (
-              <table style={{margin: 10, padding: 10, height: 100, maxHeight: 100, width: "100%", borderBottom: i!==posts.length - 1 ? "1px solid lightgray" : "none"}}>
-                <tbody>
-                  {!this.state.nsfw && tags && tags.includes("nsfw") ? <tr style={{width: "100%"}}><td>This post is not safe for work <select onChange={(e)=>this.handleNSFWChange(e.target.value)}>
-                    <option selected={this.state.nsfw} value="false">Hide NSFW Posts</option>
-                    <option selected={this.state.nsfw} value="true">Show NSFW Posts</option>
-                  </select></td></tr> : (
-                      <tr style={{width: "100%"}}>
-                        <td style={{position: "relative", height: 100, maxHeight: 100, maxWidth: 100, width: 100, overflow: "hidden"}}>
-                        {
-                          image
-                            ? <a href={`https://steemit.com${post.url}`} target="_blank"><img title={post.title} style={{position: "absolute", top: 5, maxHeight: 80}} src={image[0]}/></a>
-                            : <a href={`https://steemit.com${post.url}`} target="_blank"><img title={post.title} style={{position: "absolute", top: 5, maxHeight: 80}} src={defaultPhoto}/></a>
-                        }
-                      </td>
-                      <td style={{position: "relative", verticalAlign: "middle", width: "auto"}}>
-                        <div style={{position: "absolute", top: 3}}>
-                          <div style={{paddingBottom: 20, fontWeight: "bold", fontSize: 16, marginTop: 0, width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
-                            <a style={{color: "#000000", textDecoration: "none"}} href={`https://steemit.com${post.url}`} target="_blank">{post.title}</a>
-                          </div>
-                          <div style={{paddingBottom: 10}}>
-                            <span title={`$${post.pending_payout_value.replace(' SBD', '')} potential payout`}>${post.pending_payout_value.replace('SBD', '')}</span> | <span style={{cursor: "pointer"}} title={this.renderTitle(post)}>{post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"}</span> | {post.children} {post.children === 1 ? "comment" : "comments"} | <a href={`https://steemit.com${post.url}`} target="_blank">view post on steemit</a>
-                          </div>
-                          <div style={{width: "100%"}}>
-                            posted by <a href={`https://steemit.com/@${post.author}`} target="_blank">{`@${post.author}`}</a> (<a href={`http://steem.cool/@${post.author}`} target="_blank">steem.cool</a> | <a href={`http://steemd.com/@${post.author}`} target="_blank">steemd.com</a> | <a href={`http://steemdb.com/@${post.author}`} target="_blank">steemdb.com</a>) in <a href={`http://steemit.com/${this.state.type.toLowerCase()}/${tags && tags[0] ? tags[0] : '?' }`} target="_blank"> {tags && tags[0] ? tags[0] : '?'}</a> on {moment(post.created).format('MMMM Do YYYY, h:mm:ss a')}
-                          </div>
-                        </div>
+    return (
+      <div style={{width: "100%", overflowX: "hidden"}}>
+      {posts.map((post, i) => {
+      const metadata = JSON.parse(post.json_metadata);
+      const image = metadata.image;
+      const tags = metadata.tags;
+      return  (
+        <table style={{
+            padding: 10,
+            paddingBottom: 0,
+            height: 100,
+            maxHeight: 100,
+            width: "100%",
+            borderBottom: i!==posts.length - 1 ? "1px solid lightgray" : "none"}}>
+          <tbody>
+            {!this.state.nsfw && tags && tags.includes("nsfw")
+              ? this.renderNSFWToggle()
+              : (
+                <tr style={{width: "100%"}}>
+                  <td style={{position: "relative", height: 100, maxHeight: 100, maxWidth: 100, width: 100, overflow: "hidden"}}>
+                  {
+                    image
+                      ? <a href={`https://steemit.com${post.url}`} target="_blank"><img title={post.title} style={{position: "absolute", top: 5, maxHeight: 80}} src={image[0]}/></a>
+                      : <a href={`https://steemit.com${post.url}`} target="_blank"><img title={post.title} style={{position: "absolute", top: 5, maxHeight: 80}} src={defaultPhoto}/></a>
+                  }
+                </td>
+                <td style={{position: "relative", verticalAlign: "middle", width: "auto"}}>
+                  <div style={{position: "absolute", top: 3}}>
+                    <div style={{paddingBottom: 20, fontWeight: "bold", fontSize: 16, marginTop: 0, width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
+                      <a style={{color: "#000000", textDecoration: "none"}} href={`https://steemit.com${post.url}`} target="_blank">{post.title}</a>
+                    </div>
+                    <div style={{paddingBottom: 10}}>
+                      <span title={`$${post.pending_payout_value.replace(' SBD', '')} potential payout`}>${post.pending_payout_value.replace('SBD', '')}</span> | <span style={{cursor: "pointer"}} title={this.renderTitle(post)}>{post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"}</span> | {post.children} {post.children === 1 ? "comment" : "comments"} | <a href={`https://steemit.com${post.url}`} target="_blank">view post on steemit</a>
+                    </div>
+                    <div style={{width: "100%"}}>
+                      posted by <a href={`https://steemit.com/@${post.author}`} target="_blank">{`@${post.author}`}</a> (<a href={`http://steem.cool/@${post.author}`} target="_blank">steem.cool</a> | <a href={`http://steemd.com/@${post.author}`} target="_blank">steemd.com</a> | <a href={`http://steemdb.com/@${post.author}`} target="_blank">steemdb.com</a>) in <a href={`http://steemit.com/${this.state.type.toLowerCase()}/${tags && tags[0] ? tags[0] : '?' }`} target="_blank"> {tags && tags[0] ? tags[0] : '?'}</a> on {moment(post.created).format('MMMM Do YYYY, h:mm:ss a')}
+                    </div>
+                  </div>
                 </td>
               </tr>)}
-      </tbody></table>)})
-    }</div>);
+            </tbody></table>)})
+          }</div>);
   }
 
   getLoadingMessage(){
@@ -198,15 +230,7 @@ class App extends Component {
             <option value="Trending">Search Trending Posts</option>
             <option value="Promoted">Search Promoted Posts</option>
           </select>
-          <select defaultValue={this.state.limit} onChange={(e)=>this.handleLimitChange(e.target.value)}>
-            <option value="10">Show 10 Posts</option>
-            <option value="50">Show 50 Posts</option>
-            <option value="100">Show 100 Posts</option>
-          </select>
-          <select defaultValue={this.state.nsfw} onChange={(e)=>this.handleNSFWChange(e.target.value)}>
-            <option selected={this.state.nsfw} value="false">Hide NSFW Posts</option>
-            <option selected={this.state.nsfw} value="true">Show NSFW Posts</option>
-          </select>
+          {this.renderNSFWToggle({color: '#FFFFFF'})}
         </span>
         <span style={{color: "#FFFFFF", fontSize: 12, float: "right", paddingTop: 10, paddingRight: 20}}>
           created by <a style={{color: "#FFFFFF", textDecoration: "none"}} href="https://steemit.com/@staticinstance" target="_blank">@staticinstance</a>
