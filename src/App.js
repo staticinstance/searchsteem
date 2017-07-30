@@ -184,42 +184,47 @@ class App extends Component {
       </div>
   }
 
-  render() {
-    return (
-      <div style={{width: "!00%", paddingBottom: 0, overflow: "hidden"}}>
-        <div style={{position: "relative", height: "100%", padding: 10, borderBottom: "1px solid #1a5099", width: "100%", backgroundColor: "#4ba2f2"}}>
-          <span>
-            <img style={{height: 35, verticalAlign: "middle", paddingRight: 10}} src={logo} />
-          </span>
-          <span>
-              <input ref={(input) => { this.searchInput = input; }} style={{width: 300}} onChange={(e)=>this.handleQueryChange(e.target.value)} type="text" value={this.state.query} placeholder="Search a Tag (one word only)" />
-            <span style={{position: "relative", left: 10}}>
-              <select defaultValue={this.state.type} onChange={(e)=>this.handleTypeChange(e.target.value)}>
-                <option value="Created">Search New Posts</option>
-                <option value="Hot">Search Hot Posts</option>
-                <option value="Trending">Search Trending Posts</option>
-                <option value="Promoted">Search Promoted Posts</option>
-              </select>
-              <select defaultValue={this.state.limit} onChange={(e)=>this.handleLimitChange(e.target.value)}>
-                <option value="10">Show 10 Posts</option>
-                <option value="50">Show 50 Posts</option>
-                <option value="100">Show 100 Posts</option>
-              </select>
-              <select defaultValue={this.state.nsfw} onChange={(e)=>this.handleNSFWChange(e.target.value)}>
-                <option selected={this.state.nsfw} value="false">Hide NSFW Posts</option>
-                <option selected={this.state.nsfw} value="true">Show NSFW Posts</option>
-              </select>
-            </span>
-            <span style={{color: "#FFFFFF", fontSize: 12, float: "right", paddingTop: 10, paddingRight: 20}}>
-              created by <a style={{color: "#FFFFFF", textDecoration: "none"}} href="https://steemit.com/@staticinstance" target="_blank">@staticinstance</a>
-            </span>
-          </span>
-          </div>
+  renderHeader(){
+    return <div style={{position: "relative", height: "100%", padding: 10, borderBottom: "1px solid #1a5099", width: "100%", backgroundColor: "#4ba2f2"}}>
+        <span>
+          <img style={{height: 35, verticalAlign: "middle", paddingRight: 10}} src={logo} />
+        </span>
+        <span>
+            <input ref={(input) => { this.searchInput = input; }} style={{width: 300}} onChange={(e)=>this.handleQueryChange(e.target.value)} type="text" value={this.state.query} placeholder="Search a Tag (one word only)" />
+        <span style={{position: "relative", left: 10}}>
+          <select defaultValue={this.state.type} onChange={(e)=>this.handleTypeChange(e.target.value)}>
+            <option value="Created">Search New Posts</option>
+            <option value="Hot">Search Hot Posts</option>
+            <option value="Trending">Search Trending Posts</option>
+            <option value="Promoted">Search Promoted Posts</option>
+          </select>
+          <select defaultValue={this.state.limit} onChange={(e)=>this.handleLimitChange(e.target.value)}>
+            <option value="10">Show 10 Posts</option>
+            <option value="50">Show 50 Posts</option>
+            <option value="100">Show 100 Posts</option>
+          </select>
+          <select defaultValue={this.state.nsfw} onChange={(e)=>this.handleNSFWChange(e.target.value)}>
+            <option selected={this.state.nsfw} value="false">Hide NSFW Posts</option>
+            <option selected={this.state.nsfw} value="true">Show NSFW Posts</option>
+          </select>
+        </span>
+        <span style={{color: "#FFFFFF", fontSize: 12, float: "right", paddingTop: 10, paddingRight: 20}}>
+          created by <a style={{color: "#FFFFFF", textDecoration: "none"}} href="https://steemit.com/@staticinstance" target="_blank">@staticinstance</a>
+        </span>
+      </span>
+    </div>
+  }
 
-            {this.state.loading === true
-              ? this.getLoadingMessage()
-              : this.getPostList()
-          }
+  renderPostsPanel(){
+    return this.state.loading === true
+      ? this.getLoadingMessage()
+      : this.getPostList()
+  }
+
+  render() {
+    return (<div style={{width: "!00%", paddingBottom: 0, overflow: "hidden"}}>
+            {this.renderHeader()}
+            {this.renderPostsPanel()}
         </div>
     );
   }
