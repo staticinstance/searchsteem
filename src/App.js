@@ -135,7 +135,7 @@ class App extends Component {
       {posts.map((post, i) => {
       const metadata = JSON.parse(post.json_metadata);
       const image = metadata.image;
-      const tags = metadata.tags;
+      post.tags = metadata.tags;
       return  (
         <table key={i} style={{
             padding: 10,
@@ -145,11 +145,12 @@ class App extends Component {
             width: "100%",
             borderBottom: i!==posts.length - 1 ? "1px solid lightgray" : "none"}}>
           <tbody>
-            {!this.state.nsfw && tags && tags.includes("nsfw")
+            {!this.state.nsfw && post.tags && post.tags.includes("nsfw")
               ? <tr>
                   <td>
                     This post has been tagged with "Not Safe For Work"
                     {this.renderNSFWToggle()}
+                    <div style={{paddingTop: 10}}>{this.renderPostMetaData(post)}</div>
                   </td>
                 </tr>
               : (
@@ -166,12 +167,7 @@ class App extends Component {
                     <div style={{paddingBottom: 20, fontWeight: "bold", fontSize: 16, marginTop: 0, width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
                       <a style={{color: "#000000", textDecoration: "none"}} href={`https://steemit.com${post.url}`} target="_blank">{post.title}</a>
                     </div>
-                    <div style={{paddingBottom: 10}}>
-                      <span title={`$${post.pending_payout_value.replace(' SBD', '')} potential payout`}>${post.pending_payout_value.replace('SBD', '')}</span> | <span style={{cursor: "pointer"}} title={this.renderTitle(post)}>{post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"}</span> | {post.children} {post.children === 1 ? "comment" : "comments"} | <a href={`https://steemit.com${post.url}`} target="_blank">view post on steemit</a>
-                    </div>
-                    <div style={{width: "100%"}}>
-                      posted by <a href={`https://steemit.com/@${post.author}`} target="_blank">{`@${post.author}`}</a> (<a href={`http://steem.cool/@${post.author}`} target="_blank">steem.cool</a> | <a href={`http://steemd.com/@${post.author}`} target="_blank">steemd.com</a> | <a href={`http://steemdb.com/@${post.author}`} target="_blank">steemdb.com</a>) in <a href={`http://steemit.com/${this.state.type.toLowerCase()}/${tags && tags[0] ? tags[0] : '?' }`} target="_blank"> {tags && tags[0] ? tags[0] : '?'}</a> on {moment(post.created).format('MMMM Do YYYY, h:mm:ss a')}
-                    </div>
+                    {this.renderPostMetaData(post)}
                   </div>
                 </td>
               </tr>)}
@@ -179,6 +175,27 @@ class App extends Component {
           }</div>);
   }
 
+  renderPostMetaData(post){
+    return <div>
+        <div style={{paddingBottom: 10}}>
+          <span title={`$${post.pending_payout_value.replace(' SBD', '')} potential payout`}>${post.pending_payout_value.replace('SBD', '')}</span> | <span style={{cursor: "pointer"}} title={this.renderTitle(post)}>{post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"}</span> | {post.children} {post.children === 1 ? "comment" : "comments"} | <a href={`https://steemit.com${post.url}`} target="_blank">view post on steemit</a>
+        </div>
+        <div style={{width: "100%"}}>
+          posted by <a
+            href={`https://steemit.com/@${post.author}`}
+            target="_blank">
+            {`@${post.author}`}
+          </a> (<a
+            href={`http://steem.cool/@${post.author}`}
+            target="_blank">steem.cool</a> | <a
+             href={`http://steemd.com/@${post.author}`}
+             target="_blank">steemd.com</a> | <a
+              href={`http://steemdb.com/@${post.author}`}
+              target="_blank">steemdb.com</a>) in <a onClick={() => this.setState({query: post.tags && post.tags[0] ? post.tags[0] : '?'})} target="_blank">
+              {post.tags && post.tags[0] ? post.tags[0] : '?'}</a> on {moment(post.created).format('MMMM Do YYYY, h:mm:ss a')}
+        </div>
+    </div>
+  }
   getLoadingMessage(){
     return this.state.query
       ? <div style={{padding: 10, fontSize: 14}}>Loading results for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>...</div>
