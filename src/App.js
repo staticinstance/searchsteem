@@ -5,6 +5,7 @@ import moment from 'moment';
 import steem from 'steem';
 import logo from './assets/steem.png';
 import defaultPhoto from './assets/no-photo.png';
+import styles from './styles';
 
 class App extends Component {
 
@@ -96,7 +97,7 @@ class App extends Component {
   }
 
   renderNSFWToggle(style){
-    return <span
+    return <button
       style={
         this.state.nsfw
           ? {
@@ -110,22 +111,11 @@ class App extends Component {
               borderRadius: '5%',
               backgroundColor: '#FFF',
               color: '#c00'}
-          : {
-              cursor: 'pointer',
-              position: 'relative',
-              left: 7,
-              top: -2,
-              padding: 5,
-              fontSize: 8,
-              color: '#1a5099',
-              border: '1px solid #1a5099',
-              borderRadius: '5%',
-
-          }}
+          : styles.button}
       title={`Posts tagged with "Not Safe For Work" are currently being ${this.state.nsfw ? 'shown' : 'hidden'}.  Click to ${this.state.nsfw ? 'hide' : 'show'} them.`}
       onClick={()=>this.toggleNSFW()}>
       {`${this.state.nsfw ? 'HIDE' : 'SHOW'} NSFW POSTS`}
-    </span>
+    </button>
   }
 
   renderPosts(){
@@ -196,6 +186,7 @@ class App extends Component {
         </div>
     </div>
   }
+
   getLoadingMessage(){
     return this.state.query
       ? <div style={{padding: 10, fontSize: 14}}>Loading results for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>...</div>
@@ -242,12 +233,7 @@ class App extends Component {
         <span>
             <input ref={(input) => { this.searchInput = input; }} style={{width: 300}} onChange={(e)=>this.handleQueryChange(e.target.value)} type="text" value={this.state.query} placeholder="Search a Tag (one word only)" />
         <span style={{position: "relative", left: 10}}>
-          <select defaultValue={this.state.type} onChange={(e)=>this.handleTypeChange(e.target.value)}>
-            <option value="Created">Search New Posts</option>
-            <option value="Hot">Search Hot Posts</option>
-            <option value="Trending">Search Trending Posts</option>
-            <option value="Promoted">Search Promoted Posts</option>
-          </select>
+          {this.renderPostTypeButtons()}
           {this.renderNSFWToggle()}
         </span>
         <span style={{color: "#FFFFFF", fontSize: 12, float: "right", paddingTop: 10, paddingRight: 20}}>
@@ -262,6 +248,14 @@ class App extends Component {
     </div>
   }
 
+  renderPostTypeButtons(){
+    return <span>
+      <button style={styles.button} onClick={()=>this.handleTypeChange("Created")}>New</button>
+      <button style={styles.button} onClick={()=>this.handleTypeChange("Hot")}>Hot</button>
+      <button style={styles.button} onClick={()=>this.handleTypeChange("Trending")}>Trending</button>
+      <button style={styles.button} onClick={()=>this.handleTypeChange("Promoted")}>Promoted</button>
+    </span>
+  }
   renderPostsPanel(){
     return this.state.loading === true
       ? this.getLoadingMessage()
