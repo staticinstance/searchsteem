@@ -162,7 +162,7 @@ class App extends Component {
       : <div>{this.state.type === "Created" ? "New" : this.state.type} posts</div>
   }
 
-  getpostList(){
+  getPostList(){
     return <div style={{width: "100%"}}>
         <div style={{width: "100%",borderBottom: "1px solid lightgray", padding: 10, fontSize: 14}}>
           {this.state.query && this.state.posts.length ? (<div>
