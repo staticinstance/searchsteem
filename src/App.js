@@ -71,21 +71,18 @@ componentWillMount(){
     this.setState({
       type: value
     });
-    //this.searchSteemit();
   }
 
   handleNSFWChange(value){
     this.setState({
       nsfw: value === 'true'
     });
-    //this.searchSteemit();
   }
 
   handleLimitChange(value){
     this.setState({
       limit: value
     });
-    //this.searchSteemit();
   }
 
   handleQueryChange(value){
@@ -93,7 +90,6 @@ componentWillMount(){
     this.setState({
       query: value
     });
-    //this.searchSteemit();
   }
   getTitle(post){
     let title = post.active_votes.sort(this.compare).slice(0, 11).reduce((voters, vote, i) => {
@@ -152,6 +148,16 @@ componentWillMount(){
       : <div style={{padding: 10, fontSize: 14}}>Loading {this.state.type === "Created" ? "new" : this.state.type.toLowerCase()} posts...</div>
   }
 
+  getNotFoundMessage(){
+    return this.state.query
+      ? <div>
+          Couldn't find any <span style={{fontWeight: "bold"}}>
+            {this.state.type === "Created" ? " new " : this.state.type.toLowerCase()}
+          </span> posts tagged with <span style={{fontWeight: "bold"}}> {this.state.query}</span>
+        </div>
+      : <div>{this.state.type === "Created" ? "New" : this.state.type} posts</div>
+  }
+
   render() {
     return (
       <div style={{width: "!00%", paddingBottom: 0, overflow: "hidden"}}>
@@ -198,7 +204,7 @@ componentWillMount(){
                       trending
                     </a> | <a title="view on steemit" href={`https://steemit.com/promoted/${this.state.query.toLowerCase()}`} target="_blank">
                       promoted
-                    </a>)</div></div>) : this.state.query ? <div>Couldn't find any <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span></div> : <div>{this.state.type === "Created" ? "New" : this.state.type} posts</div>}
+                    </a>)</div></div>) : this.getNotFoundMessage()}
 
                   </div>
                 <div style={{width: "100%", position: "absolute", top: this.state.query && this.state.posts.length ? 109 : 93, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
