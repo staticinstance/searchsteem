@@ -17,6 +17,7 @@ class App extends Component {
       posts: [],
       nsfw: false,
       loading: false,
+      shownNSFWPosts: []
     };
   }
 
@@ -32,10 +33,12 @@ class App extends Component {
 
   shouldComponentUpdate(nextProps, nextState){
     if(!deepEqual(nextState.query, this.state.query) ||
+       !deepEqual(nextState.shownNSFWPosts, this.state.shownNSFWPosts) ||
        !deepEqual(nextState.type, this.state.type) ||
        !deepEqual(nextState.nsfw, this.state.nsfw) ||
        !deepEqual(nextState.posts, this.state.posts) ||
        !deepEqual(nextState.loading, this.state.loading)){
+         console.log('updating')
       return true;
     } else {
       return false;
@@ -101,18 +104,33 @@ class App extends Component {
       style={{...styles.button, ...this.state.nsfw ? styles.nsfwButton : {}}}
       title={`Posts tagged with "Not Safe For Work" are currently being ${this.state.nsfw ? 'shown' : 'hidden'}.  Click to ${this.state.nsfw ? 'hide' : 'show'} them.`}
       onClick={()=>this.toggleNSFW()}>
-      {`${this.state.nsfw ? 'HIDE' : 'SHOW'} NSFW POSTS`}
+      {`${this.state.nsfw ? 'HIDE' : 'SHOW'} ALL NSFW POSTS`}
+    </span>
+  }
+
+  renderNSFWSingleToggle(id){
+    return <span
+      style={{...styles.button, ...this.state.nsfw ? styles.nsfwButton : {}}}
+      onClick={()=>this.setState({
+        shownNSFWPosts: (()=>{
+          const shownNSFWPosts = this.state.shownNSFWPosts;
+          shownNSFWPosts.push(id);
+          return shownNSFWPosts;
+        })()
+      })}>
+      {`${this.state.nsfw ? 'HIDE THIS' : 'SHOW THIS'} NSFW POST`}
     </span>
   }
 
   renderPosts(){
-    const { posts } = this.state;
+    const { posts, shownNSFWPosts } = this.state;
     return (
       <div style={{width: "100%", overflowX: "hidden"}}>
       {posts.map((post, i) => {
       const metadata = JSON.parse(post.json_metadata);
       const image = metadata.image;
       post.tags = metadata.tags;
+      console.log('includes', shownNSFWPosts.includes(post.id), post.id)
       return  (
         <table key={i} style={{
             padding: 10,
@@ -122,10 +140,11 @@ class App extends Component {
             width: "100%",
             borderBottom: i!==posts.length - 1 ? "1px solid lightgray" : "none"}}>
           <tbody>
-            {!this.state.nsfw && post.tags && post.tags.includes("nsfw")
+            {!this.state.nsfw && post.tags && post.tags.includes("nsfw") && !shownNSFWPosts.includes(post.id)
               ? <tr>
                   <td>
                     This post has been tagged with "Not Safe For Work"
+                    {this.renderNSFWSingleToggle(post.id)}
                     {this.renderNSFWToggle()}
                     <div style={{paddingTop: 10}}>{this.renderPostMetaData(post)}</div>
                   </td>
