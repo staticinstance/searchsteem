@@ -140,7 +140,7 @@ class App extends Component {
                   }
                 </td>
                 <td style={{position: "relative", verticalAlign: "middle", width: "auto"}}>
-                  <div style={{position: "absolute", top: 3}}>
+                  <div style={{position: "absolute", top: 3, width: '100%'}}>
                     <div style={{paddingBottom: 20, fontWeight: "bold", fontSize: 16, marginTop: 0, width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
                       <a style={{color: "#000000", textDecoration: "none"}} href={`https://steemit.com${post.url}`} target="_blank">{post.title}</a>
                     </div>
