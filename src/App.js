@@ -169,7 +169,7 @@ class App extends Component {
              target="_blank">steemd.com</a> | <a
               href={`http://steemdb.com/@${post.author}`}
               target="_blank">steemdb.com</a>) in <a onClick={() => this.setState({query: post.tags && post.tags[0] ? post.tags[0] : '?'})} target="_blank">
-              {post.tags && post.tags[0] ? post.tags[0] : '?'}</a> on {moment(post.created).format('MMMM Do YYYY, h:mm:ss a')}
+              {post.tags && post.tags[0] ? post.tags[0] : '?'}</a> on {moment(post.created).format('MMMM Do YYYY, h:mm a')}
         </div>
     </div>
   }
