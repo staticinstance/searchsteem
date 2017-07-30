@@ -98,7 +98,7 @@ class App extends Component {
 
   renderNSFWToggle(style){
     return <span
-      style={
+      style={[...style,
         this.state.nsfw
           ? {
               cursor: 'pointer',
@@ -116,15 +116,13 @@ class App extends Component {
               position: 'relative',
               left: 3,
               top: -2,
-              marginBottom: 5,
-              marginLeft: 10,
               padding: 5,
               fontSize: 8,
-              color: '#FFF',
-              border: '1px solid #FFF',
+              color: '#1a5099',
+              border: '1px solid #1a5099',
               borderRadius: '5%',
 
-          }}
+          }]}
       title={`Posts tagged with "Not Safe For Work" are currently being ${this.state.nsfw ? 'shown' : 'hidden'}.  Click to ${this.state.nsfw ? 'show' : 'hide'} them.`}
       onClick={()=>this.toggleNSFW()}>
       {`${this.state.nsfw ? 'hide' : 'show'} nsfw posts`}
@@ -230,7 +228,7 @@ class App extends Component {
             <option value="Trending">Search Trending Posts</option>
             <option value="Promoted">Search Promoted Posts</option>
           </select>
-          {this.renderNSFWToggle({color: '#FFFFFF'})}
+          {this.renderNSFWToggle()}
         </span>
         <span style={{color: "#FFFFFF", fontSize: 12, float: "right", paddingTop: 10, paddingRight: 20}}>
           created by <a style={{color: "#FFFFFF", textDecoration: "none"}} href="https://steemit.com/@staticinstance" target="_blank">@staticinstance</a>
