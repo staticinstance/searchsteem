@@ -1,7 +1,6 @@
 /* global window */
 import React, { Component } from 'react';
 import deepEqual from 'deep-equal';
-import marked from 'marked';
 import moment from 'moment';
 import steem from 'steem';
 import logo from './assets/steem.png';
@@ -98,12 +97,12 @@ class App extends Component {
 
   renderNSFWToggle(style){
     return <span
-      style={[...style,
+      style={
         this.state.nsfw
           ? {
               cursor: 'pointer',
               position: 'relative',
-              left: 3,
+              left: 7,
               top: -2,
               padding: 5,
               fontSize: 8,
@@ -114,7 +113,7 @@ class App extends Component {
           : {
               cursor: 'pointer',
               position: 'relative',
-              left: 3,
+              left: 7,
               top: -2,
               padding: 5,
               fontSize: 8,
@@ -122,8 +121,8 @@ class App extends Component {
               border: '1px solid #1a5099',
               borderRadius: '5%',
 
-          }]}
-      title={`Posts tagged with "Not Safe For Work" are currently being ${this.state.nsfw ? 'shown' : 'hidden'}.  Click to ${this.state.nsfw ? 'show' : 'hide'} them.`}
+          }}
+      title={`Posts tagged with "Not Safe For Work" are currently being ${this.state.nsfw ? 'shown' : 'hidden'}.  Click to ${this.state.nsfw ? 'hide' : 'show'} them.`}
       onClick={()=>this.toggleNSFW()}>
       {`${this.state.nsfw ? 'hide' : 'show'} nsfw posts`}
     </span>
@@ -131,7 +130,6 @@ class App extends Component {
 
   renderPosts(){
     const { posts } = this.state;
-    const type = this.state.type === "Created" ? "new" : this.state.type.toLowerCase();
     return (
       <div style={{width: "100%", overflowX: "hidden"}}>
       {posts.map((post, i) => {
@@ -139,7 +137,7 @@ class App extends Component {
       const image = metadata.image;
       const tags = metadata.tags;
       return  (
-        <table style={{
+        <table key={i} style={{
             padding: 10,
             paddingBottom: 0,
             height: 100,
@@ -148,14 +146,19 @@ class App extends Component {
             borderBottom: i!==posts.length - 1 ? "1px solid lightgray" : "none"}}>
           <tbody>
             {!this.state.nsfw && tags && tags.includes("nsfw")
-              ? this.renderNSFWToggle()
+              ? <tr>
+                  <td>
+                    This post has been tagged with "Not Safe For Work"
+                    {this.renderNSFWToggle()}
+                  </td>
+                </tr>
               : (
                 <tr style={{width: "100%"}}>
                   <td style={{position: "relative", height: 100, maxHeight: 100, maxWidth: 100, width: 100, overflow: "hidden"}}>
                   {
                     image
-                      ? <a href={`https://steemit.com${post.url}`} target="_blank"><img title={post.title} style={{position: "absolute", top: 5, maxHeight: 80}} src={image[0]}/></a>
-                      : <a href={`https://steemit.com${post.url}`} target="_blank"><img title={post.title} style={{position: "absolute", top: 5, maxHeight: 80}} src={defaultPhoto}/></a>
+                      ? <a href={`https://steemit.com${post.url}`} target="_blank"><img alt={post.title} title={post.title} style={{position: "absolute", top: 5, maxHeight: 80}} src={image[0]}/></a>
+                      : <a href={`https://steemit.com${post.url}`} target="_blank"><img alt={post.title} title={post.title} style={{position: "absolute", top: 5, maxHeight: 80}} src={defaultPhoto}/></a>
                   }
                 </td>
                 <td style={{position: "relative", verticalAlign: "middle", width: "auto"}}>
@@ -217,7 +220,7 @@ class App extends Component {
   renderHeader(){
     return <div style={{position: "relative", height: "100%", padding: 10, borderBottom: "1px solid #1a5099", width: "100%", backgroundColor: "#4ba2f2"}}>
         <span>
-          <img style={{height: 35, verticalAlign: "middle", paddingRight: 10}} src={logo} />
+          <img alt='SearchSteem!' title='SearchSteem!' style={{height: 35, verticalAlign: "middle", paddingRight: 10}} src={logo} />
         </span>
         <span>
             <input ref={(input) => { this.searchInput = input; }} style={{width: 300}} onChange={(e)=>this.handleQueryChange(e.target.value)} type="text" value={this.state.query} placeholder="Search a Tag (one word only)" />
@@ -231,7 +234,12 @@ class App extends Component {
           {this.renderNSFWToggle()}
         </span>
         <span style={{color: "#FFFFFF", fontSize: 12, float: "right", paddingTop: 10, paddingRight: 20}}>
-          created by <a style={{color: "#FFFFFF", textDecoration: "none"}} href="https://steemit.com/@staticinstance" target="_blank">@staticinstance</a>
+          created by <a
+            style={{color: "#FFFFFF", textDecoration: "none"}}
+            href="https://steemit.com/@staticinstance"
+            target="_blank"
+            rel="noopener noreferrer">
+            @staticinstance</a>
         </span>
       </span>
     </div>
