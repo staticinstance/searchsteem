@@ -1,4 +1,10 @@
 export default {
+  postImage: {
+    position: "absolute",
+    top: 5,
+    maxHeight: 80,
+    width: 90,
+  },
   button: {
       cursor: 'pointer',
       position: 'relative',

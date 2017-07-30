@@ -135,8 +135,8 @@ class App extends Component {
                   <td style={{position: "relative", height: 100, maxHeight: 100, maxWidth: 100, width: 100, overflow: "hidden"}}>
                   {
                     image
-                      ? <a href={`https://steemit.com${post.url}`} target="_blank"><img alt={post.title} title={post.title} style={{position: "absolute", top: 5, maxHeight: 80}} src={image[0]}/></a>
-                      : <a href={`https://steemit.com${post.url}`} target="_blank"><img alt={post.title} title={post.title} style={{position: "absolute", top: 5, maxHeight: 80}} src={defaultPhoto}/></a>
+                      ? <a href={`https://steemit.com${post.url}`} target="_blank"><img alt={post.title} title={post.title} style={styles.postImage} src={image[0]}/></a>
+                      : <a href={`https://steemit.com${post.url}`} target="_blank"><img alt={post.title} title={post.title} style={styles.postImage} src={defaultPhoto}/></a>
                   }
                 </td>
                 <td style={{position: "relative", verticalAlign: "middle", width: "auto"}}>
