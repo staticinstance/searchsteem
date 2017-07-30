@@ -124,7 +124,7 @@ class App extends Component {
           }}
       title={`Posts tagged with "Not Safe For Work" are currently being ${this.state.nsfw ? 'shown' : 'hidden'}.  Click to ${this.state.nsfw ? 'hide' : 'show'} them.`}
       onClick={()=>this.toggleNSFW()}>
-      {`${this.state.nsfw ? 'hide' : 'show'} nsfw posts`}
+      {`${this.state.nsfw ? 'HIDE' : 'SHOW'} NSFW POSTS`}
     </span>
   }
 
