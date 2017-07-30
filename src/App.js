@@ -97,25 +97,12 @@ class App extends Component {
   }
 
   renderNSFWToggle(style){
-    return <button
-      style={
-        this.state.nsfw
-          ? {
-              cursor: 'pointer',
-              position: 'relative',
-              left: 7,
-              top: -2,
-              padding: 5,
-              fontSize: 8,
-              border: '1px solid #c00',
-              borderRadius: '5%',
-              backgroundColor: '#FFF',
-              color: '#c00'}
-          : styles.button}
+    return <span
+      style={{...styles.button, ...this.state.nsfw ? styles.nsfwButton : {}}}
       title={`Posts tagged with "Not Safe For Work" are currently being ${this.state.nsfw ? 'shown' : 'hidden'}.  Click to ${this.state.nsfw ? 'hide' : 'show'} them.`}
       onClick={()=>this.toggleNSFW()}>
       {`${this.state.nsfw ? 'HIDE' : 'SHOW'} NSFW POSTS`}
-    </button>
+    </span>
   }
 
   renderPosts(){
@@ -190,7 +177,7 @@ class App extends Component {
   getLoadingMessage(){
     return this.state.query
       ? <div style={{padding: 10, fontSize: 14}}>Loading results for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>...</div>
-      : <div style={{padding: 10, fontSize: 14}}>Loading {this.state.type === "Created" ? "new" : this.state.type.toLowerCase()} posts...</div>
+      : <div style={{padding: 10, fontSize: 14}}>Loading {this.state.type === "Created" ? "New" : this.state.type} posts...</div>
   }
 
   getNotFoundMessage(){
@@ -248,12 +235,28 @@ class App extends Component {
     </div>
   }
 
+  compareTypes(type){
+    return this.state.type === type;
+  }
+
   renderPostTypeButtons(){
     return <span>
-      <button style={styles.button} onClick={()=>this.handleTypeChange("Created")}>New</button>
-      <button style={styles.button} onClick={()=>this.handleTypeChange("Hot")}>Hot</button>
-      <button style={styles.button} onClick={()=>this.handleTypeChange("Trending")}>Trending</button>
-      <button style={styles.button} onClick={()=>this.handleTypeChange("Promoted")}>Promoted</button>
+      <div style={{...styles.button, ...this.compareTypes('Created')
+        ? styles.selectedButton
+        : {}}}
+        onClick={()=>this.handleTypeChange("Created")}>New</div>
+      <div style={{...styles.button, ...this.compareTypes('Hot')
+        ? styles.selectedButton
+        : {}}}
+        onClick={()=>this.handleTypeChange("Hot")}>Hot</div>
+      <div style={{...styles.button, ...this.compareTypes('Trending')
+        ? styles.selectedButton
+        : {}}}
+        onClick={()=>this.handleTypeChange("Trending")}>Trending</div>
+      <div style={{...styles.button, ...this.compareTypes('Promoted')
+        ? styles.selectedButton
+        : {}}}
+        onClick={()=>this.handleTypeChange("Promoted")}>Promoted</div>
     </span>
   }
   renderPostsPanel(){

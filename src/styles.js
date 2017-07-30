@@ -11,6 +11,18 @@ export default {
       borderRadius: '5%',
       backgroundColor: "#FFF",
       minWidth: 50,
-      marginLeft: 1,
+      marginLeft: 2,
+      textAlign: 'center',
+      display: 'inline-block',
+  },
+  nsfwButton: {
+    border: '1px solid #c00',
+    backgroundColor: '#FFF',
+    color: '#c00'
+  },
+  selectedButton: {
+    color: '#FFFFFF',
+    backgroundColor: "#4ba2f2",
+    border: '1px solid #FFFFFF',
   }
 }
