@@ -154,8 +154,8 @@ componentWillMount(){
 
   render() {
     return (
-      <div style={{width: window.screen.width, paddingBottom: 0, overflow: "hidden"}}>
-        <div style={{position: "relative", height: "100%", padding: 10, borderBottom: "1px solid #1a5099", width: window.screen.width, backgroundColor: "#4ba2f2"}}>
+      <div style={{width: "!00%", paddingBottom: 0, overflow: "hidden"}}>
+        <div style={{position: "relative", height: "100%", padding: 10, borderBottom: "1px solid #1a5099", width: "100%", backgroundColor: "#4ba2f2"}}>
           <span>
             <img style={{height: 35, verticalAlign: "middle", paddingRight: 10}} src={logo} />
           </span>
