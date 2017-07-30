@@ -153,7 +153,7 @@ class App extends Component {
   }
 
   renderPostMetaData(post){
-    return <div>
+    return <div style={{width: '100%'}}>
         <div style={{paddingBottom: 10}}>
           <span title={`$${post.pending_payout_value.replace(' SBD', '')} potential payout`}>${post.pending_payout_value.replace('SBD', '')}</span> | <span style={{cursor: "pointer"}} title={this.renderTitle(post)}>{post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"}</span> | {post.children} {post.children === 1 ? "comment" : "comments"} | <a href={`https://steemit.com${post.url}`} target="_blank">view post on steemit</a>
         </div>
@@ -266,7 +266,7 @@ class App extends Component {
   }
 
   render() {
-    return (<div style={{width: "!00%", paddingBottom: 0, overflow: "hidden"}}>
+    return (<div style={{width: "100%", paddingBottom: 0, overflow: "hidden"}}>
             {this.renderHeader()}
             {this.renderPostsPanel()}
         </div>
