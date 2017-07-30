@@ -116,11 +116,11 @@ componentWillMount(){
             return  (
               <table style={{margin: 10, padding: 10, height: 100, maxHeight: 100, width: "100%", borderBottom: i!==posts.length - 1 ? "1px solid lightgray" : "none"}}>
                 <tbody>
-                  {!this.state.nsfw && tags && tags.includes("nsfw") ? <tr><td>This post is not safe for work <select onChange={(e)=>this.handleNSFWChange(e.target.value)}>
+                  {!this.state.nsfw && tags && tags.includes("nsfw") ? <tr style={{width: "100%"}}><td>This post is not safe for work <select onChange={(e)=>this.handleNSFWChange(e.target.value)}>
                     <option selected={this.state.nsfw} value="false">Hide NSFW Posts</option>
                     <option selected={this.state.nsfw} value="true">Show NSFW Posts</option>
                   </select></td></tr> : (
-                      <tr>
+                      <tr style={{width: "100%"}}>
                         <td style={{position: "relative", height: 100, maxHeight: 100, maxWidth: 100, width: 100, overflow: "hidden"}}>
                         {
                           image
@@ -128,7 +128,7 @@ componentWillMount(){
                             : <a href={`https://steemit.com${post.url}`} target="_blank"><img title={post.title} style={{position: "absolute", top: 5, maxHeight: 80}} src={defaultPhoto}/></a>
                         }
                       </td>
-                      <td style={{position: "relative", verticalAlign: "middle", width: "100%"}}>
+                      <td style={{position: "relative", verticalAlign: "middle", width: "auto"}}>
                         <div style={{position: "absolute", top: 3}}>
                           <div style={{paddingBottom: 20, fontWeight: "bold", fontSize: 16, marginTop: 0, width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
                             <a style={{color: "#000000", textDecoration: "none"}} href={`https://steemit.com${post.url}`} target="_blank">{post.title}</a>
@@ -186,8 +186,8 @@ componentWillMount(){
 
             {this.state.loading === true
               ? this.getLoadingMessage()
-              : <div>
-                  <div style={{borderBottom: "1px solid lightgray", padding: 10, fontSize: 14}}>
+              : <div style={{width: "100%"}}>
+                  <div style={{width: "100%",borderBottom: "1px solid lightgray", padding: 10, fontSize: 14}}>
                     {this.state.query && this.state.posts.length ? (<div>
                       Showing results for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>
                     <div>View results for <span style={{fontWeight: "bold"}}>{this.state.query}</span> on steemit (<a title="view on steemit" href={`https://steemit.com/created/${this.state.query.toLowerCase()}`} target="_blank">
@@ -201,7 +201,7 @@ componentWillMount(){
                     </a>)</div></div>) : this.state.query ? <div>Couldn't find any <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span></div> : <div>{this.state.type === "Created" ? "New" : this.state.type} posts</div>}
 
                   </div>
-                <div style={{position: "absolute", top: this.state.query && this.state.posts.length ? 109 : 93, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
+                <div style={{width: "100%", position: "absolute", top: this.state.query && this.state.posts.length ? 109 : 93, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
                   {this.renderPosts()}
                 </div>
             </div>
