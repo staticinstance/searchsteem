@@ -21,11 +21,13 @@ class App extends Component {
     };
   }
 
-  compare(a,b) {
-    if (a.rshares > b.rshares)
+  compareVotes(a,b) {
+    if (a.rshares > b.rshares){
       return -1;
-    if (a.rshares < b.rshares)
+    }
+    if (a.rshares < b.rshares){
       return 1;
+    }
     return 0;
   }
 
@@ -55,9 +57,9 @@ class App extends Component {
     this.searchInput.focus()
   }
 
-componentWillMount(){
-  this.searchSteemit();
-}
+  componentWillMount(){
+    this.searchSteemit();
+  }
 
   searchSteemit(){
     this.setState({loading: true});
@@ -91,8 +93,9 @@ componentWillMount(){
       query: value
     });
   }
-  getTitle(post){
-    let title = post.active_votes.sort(this.compare).slice(0, 11).reduce((voters, vote, i) => {
+
+  renderTitle(post){
+    let title = post.active_votes.sort(this.compareVotes).slice(0, 11).reduce((voters, vote, i) => {
       voters = `${voters}${vote.voter}${(post.active_votes.length - 2 >= i) ? '\n' : ''}`;
       return voters;
     }, post.active_votes.length > 10 ? "\n🏆 Top Voters\n\n" : "");
@@ -101,6 +104,7 @@ componentWillMount(){
     }
     return title;
   }
+
   renderPosts(){
     const { posts } = this.state;
     const type = this.state.type === "Created" ? "new" : this.state.type.toLowerCase();
@@ -130,7 +134,7 @@ componentWillMount(){
                             <a style={{color: "#000000", textDecoration: "none"}} href={`https://steemit.com${post.url}`} target="_blank">{post.title}</a>
                           </div>
                           <div style={{paddingBottom: 10}}>
-                            <span title={`$${post.pending_payout_value.replace(' SBD', '')} potential payout`}>${post.pending_payout_value.replace('SBD', '')}</span> | <span style={{cursor: "pointer"}} title={this.getTitle(post)}>{post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"}</span> | {post.children} {post.children === 1 ? "comment" : "comments"} | <a href={`https://steemit.com${post.url}`} target="_blank">view post on steemit</a>
+                            <span title={`$${post.pending_payout_value.replace(' SBD', '')} potential payout`}>${post.pending_payout_value.replace('SBD', '')}</span> | <span style={{cursor: "pointer"}} title={this.renderTitle(post)}>{post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"}</span> | {post.children} {post.children === 1 ? "comment" : "comments"} | <a href={`https://steemit.com${post.url}`} target="_blank">view post on steemit</a>
                           </div>
                           <div style={{width: "100%"}}>
                             posted by <a href={`https://steemit.com/@${post.author}`} target="_blank">{`@${post.author}`}</a> (<a href={`http://steem.cool/@${post.author}`} target="_blank">steem.cool</a> | <a href={`http://steemd.com/@${post.author}`} target="_blank">steemd.com</a> | <a href={`http://steemdb.com/@${post.author}`} target="_blank">steemdb.com</a>) in <a href={`http://steemit.com/${this.state.type.toLowerCase()}/${tags && tags[0] ? tags[0] : '?' }`} target="_blank"> {tags && tags[0] ? tags[0] : '?'}</a> on {moment(post.created).format('MMMM Do YYYY, h:mm:ss a')}
@@ -158,6 +162,28 @@ componentWillMount(){
       : <div>{this.state.type === "Created" ? "New" : this.state.type} posts</div>
   }
 
+  getpostList(){
+    return <div style={{width: "100%"}}>
+        <div style={{width: "100%",borderBottom: "1px solid lightgray", padding: 10, fontSize: 14}}>
+          {this.state.query && this.state.posts.length ? (<div>
+            Showing results for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>
+          <div>View results for <span style={{fontWeight: "bold"}}>{this.state.query}</span> on steemit (<a title="view on steemit" href={`https://steemit.com/created/${this.state.query.toLowerCase()}`} target="_blank">
+            new
+          </a> | <a title="view on steemit" href={`https://steemit.com/hot/${this.state.query.toLowerCase()}`} target="_blank">
+            hot
+          </a> | <a title="view on steemit" href={`https://steemit.com/trending/${this.state.query.toLowerCase()}`} target="_blank">
+            trending
+          </a> | <a title="view on steemit" href={`https://steemit.com/promoted/${this.state.query.toLowerCase()}`} target="_blank">
+            promoted
+          </a>)</div></div>) : this.getNotFoundMessage()}
+
+        </div>
+        <div style={{width: "100%", position: "absolute", top: this.state.query && this.state.posts.length ? 109 : 93, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
+          {this.renderPosts()}
+        </div>
+      </div>
+  }
+
   render() {
     return (
       <div style={{width: "!00%", paddingBottom: 0, overflow: "hidden"}}>
@@ -170,14 +196,14 @@ componentWillMount(){
             <span style={{position: "relative", left: 10}}>
               <select defaultValue={this.state.type} onChange={(e)=>this.handleTypeChange(e.target.value)}>
                 <option value="Created">Search New Posts</option>
-              <option value="Hot">Search Hot Posts</option>
-            <option value="Trending">Search Trending Posts</option>
-          <option value="Promoted">Search Promoted Posts</option>
+                <option value="Hot">Search Hot Posts</option>
+                <option value="Trending">Search Trending Posts</option>
+                <option value="Promoted">Search Promoted Posts</option>
               </select>
               <select defaultValue={this.state.limit} onChange={(e)=>this.handleLimitChange(e.target.value)}>
                 <option value="10">Show 10 Posts</option>
-              <option value="50">Show 50 Posts</option>
-            <option value="100">Show 100 Posts</option>
+                <option value="50">Show 50 Posts</option>
+                <option value="100">Show 100 Posts</option>
               </select>
               <select defaultValue={this.state.nsfw} onChange={(e)=>this.handleNSFWChange(e.target.value)}>
                 <option selected={this.state.nsfw} value="false">Hide NSFW Posts</option>
@@ -192,27 +218,9 @@ componentWillMount(){
 
             {this.state.loading === true
               ? this.getLoadingMessage()
-              : <div style={{width: "100%"}}>
-                  <div style={{width: "100%",borderBottom: "1px solid lightgray", padding: 10, fontSize: 14}}>
-                    {this.state.query && this.state.posts.length ? (<div>
-                      Showing results for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>
-                    <div>View results for <span style={{fontWeight: "bold"}}>{this.state.query}</span> on steemit (<a title="view on steemit" href={`https://steemit.com/created/${this.state.query.toLowerCase()}`} target="_blank">
-                      new
-                    </a> | <a title="view on steemit" href={`https://steemit.com/hot/${this.state.query.toLowerCase()}`} target="_blank">
-                      hot
-                    </a> | <a title="view on steemit" href={`https://steemit.com/trending/${this.state.query.toLowerCase()}`} target="_blank">
-                      trending
-                    </a> | <a title="view on steemit" href={`https://steemit.com/promoted/${this.state.query.toLowerCase()}`} target="_blank">
-                      promoted
-                    </a>)</div></div>) : this.getNotFoundMessage()}
-
-                  </div>
-                <div style={{width: "100%", position: "absolute", top: this.state.query && this.state.posts.length ? 109 : 93, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
-                  {this.renderPosts()}
-                </div>
-            </div>
-      }
-    </div>
+              : this.getPostList()
+          }
+        </div>
     );
   }
 }
