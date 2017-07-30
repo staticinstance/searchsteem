@@ -161,18 +161,19 @@ componentWillMount(){
           </span>
           <span>
               <input ref={(input) => { this.searchInput = input; }} style={{width: 300}} onChange={(e)=>this.handleQueryChange(e.target.value)} type="text" value={this.state.query} placeholder="Search a Tag (one word only)" />
-            <span style={{position: "relative", left: 10}}><select onChange={(e)=>this.handleTypeChange(e.target.value)}>
+            <span style={{position: "relative", left: 10}}>
+              <select defaultValue={this.state.type} onChange={(e)=>this.handleTypeChange(e.target.value)}>
                 <option value="Created">Search New Posts</option>
               <option value="Hot">Search Hot Posts</option>
             <option value="Trending">Search Trending Posts</option>
           <option value="Promoted">Search Promoted Posts</option>
               </select>
-              <select onChange={(e)=>this.handleLimitChange(e.target.value)}>
+              <select defaultValue={this.state.limit} onChange={(e)=>this.handleLimitChange(e.target.value)}>
                 <option value="10">Show 10 Posts</option>
               <option value="50">Show 50 Posts</option>
             <option value="100">Show 100 Posts</option>
               </select>
-              <select onChange={(e)=>this.handleNSFWChange(e.target.value)}>
+              <select defaultValue={this.state.nsfw} onChange={(e)=>this.handleNSFWChange(e.target.value)}>
                 <option selected={this.state.nsfw} value="false">Hide NSFW Posts</option>
                 <option selected={this.state.nsfw} value="true">Show NSFW Posts</option>
               </select>
