@@ -183,7 +183,7 @@ class App extends Component {
 
   renderPostMetaData(post){
     return <div style={{width: '100%'}}>
-          <span title={`$${post.pending_payout_value.replace(' SBD', '')} potential payout`}>${post.pending_payout_value.replace('SBD', '')}</span> | <span style={{cursor: "pointer"}} title={this.renderVotersTitle(post)}>{post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"}</span> | {post.children} {post.children === 1 ? "comment" : "comments"} | <a href={`https://steemit.com${post.url}`} target="_blank">view post on steemit</a>
+          <span title={`$${post.pending_payout_value.replace(' SBD', '')} potential payout`}>${post.pending_payout_value.replace('SBD', '')}</span> | <span style={{cursor: "pointer"}} title={this.renderVotersTitle(post)}>{post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"}</span> | {post.children} {post.children === 1 ? "comment" : "comments"} | {moment(post.created).format('MMMM Do YYYY, h:mm a')} | <a href={`https://steemit.com${post.url}`} target="_blank">view post on steemit</a>
           <div style={{width: "100%"}}>
             <a
               href={`https://steemit.com/@${post.author}`}
@@ -195,7 +195,7 @@ class App extends Component {
                href={`http://steemd.com/@${post.author}`}
                target="_blank">steemd.com</a> | <a
                 href={`http://steemdb.com/@${post.author}`}
-                target="_blank">steemdb.com</a>) on {moment(post.created).format('MMMM Do YYYY, h:mm a')}
+                target="_blank">steemdb.com</a>)
                 {
                   post.tags && post.tags[0]
                     ? <div style={styles.tagButtons}>{ post.tags.map(tag => <span
