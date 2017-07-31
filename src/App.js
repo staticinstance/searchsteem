@@ -343,7 +343,7 @@ class App extends Component {
     return <div style={{width: "100%"}}>
         <div style={{width: "100%",borderBottom: "1px solid lightgray", padding: 10, fontSize: 14}}>
           {
-            (this.state.loading === true && Array.isArray(this.state.posts) && this.state.posts.length)
+            (this.state.loading === true && Array.isArray(this.state.posts) && !this.state.posts.length)
               ? this.getLoadingMessage()
               : this.state.query && Array.isArray(this.state.posts) && this.state.posts.length
                 ? <div>
