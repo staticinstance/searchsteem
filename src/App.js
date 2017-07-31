@@ -88,7 +88,7 @@ class App extends Component {
     });
   }
 
-  renderTitle(post){
+  renderVotersTitle(post){
     let title = post.active_votes.sort(this.compareVotes).slice(0, 11).reduce((voters, vote, i) => {
       voters = `${voters}${vote.voter}${(post.active_votes.length - 2 >= i) ? '\n' : ''}`;
       return voters;
@@ -138,6 +138,7 @@ class App extends Component {
       return  (
         <table key={i} style={{
             padding: 10,
+            paddingTop: 5,
             paddingBottom: 0,
             height: 100,
             maxHeight: 100,
@@ -182,23 +183,33 @@ class App extends Component {
 
   renderPostMetaData(post){
     return <div style={{width: '100%'}}>
-        <div style={{paddingBottom: 10}}>
-          <span title={`$${post.pending_payout_value.replace(' SBD', '')} potential payout`}>${post.pending_payout_value.replace('SBD', '')}</span> | <span style={{cursor: "pointer"}} title={this.renderTitle(post)}>{post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"}</span> | {post.children} {post.children === 1 ? "comment" : "comments"} | <a href={`https://steemit.com${post.url}`} target="_blank">view post on steemit</a>
-        </div>
-        <div style={{width: "100%"}}>
-          posted by <a
-            href={`https://steemit.com/@${post.author}`}
-            target="_blank">
-            {`@${post.author}`}
-          </a> (<a
-            href={`http://steem.cool/@${post.author}`}
-            target="_blank">steem.cool</a> | <a
-             href={`http://steemd.com/@${post.author}`}
-             target="_blank">steemd.com</a> | <a
-              href={`http://steemdb.com/@${post.author}`}
-              target="_blank">steemdb.com</a>) in <a onClick={() => this.setState({query: post.tags && post.tags[0] ? post.tags[0] : '?'})} target="_blank">
-              {post.tags && post.tags[0] ? post.tags[0] : '?'}</a> on {moment(post.created).format('MMMM Do YYYY, h:mm a')}
-        </div>
+          <span title={`$${post.pending_payout_value.replace(' SBD', '')} potential payout`}>${post.pending_payout_value.replace('SBD', '')}</span> | <span style={{cursor: "pointer"}} title={this.renderVotersTitle(post)}>{post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"}</span> | {post.children} {post.children === 1 ? "comment" : "comments"} | <a href={`https://steemit.com${post.url}`} target="_blank">view post on steemit</a>
+          <div style={{width: "100%"}}>
+            <a
+              href={`https://steemit.com/@${post.author}`}
+              target="_blank">
+              {`@${post.author}`}
+            </a> (<a
+              href={`http://steem.cool/@${post.author}`}
+              target="_blank">steem.cool</a> | <a
+               href={`http://steemd.com/@${post.author}`}
+               target="_blank">steemd.com</a> | <a
+                href={`http://steemdb.com/@${post.author}`}
+                target="_blank">steemdb.com</a>) on {moment(post.created).format('MMMM Do YYYY, h:mm a')}
+                {
+                  post.tags && post.tags[0]
+                    ? <div style={styles.tagButtons}>{ post.tags.map(tag => <span
+                      style={{...styles.button, ...this.state.query === tag
+                        ? styles.selectedButton
+                        : {}}}
+                      onClick={() => this.setState({query: tag})} target="_blank">
+                            {tag}
+                          </span>)
+                        }
+                      </div>
+                    : null
+                }
+          </div>
     </div>
   }
 
@@ -263,25 +274,25 @@ class App extends Component {
     </div>
   }
 
-  compareTypes(type){
+  isTypeSelected(type){
     return this.state.type === type;
   }
 
   renderPostTypeButtons(){
     return <span style={styles.typeButtons}>
-      <div style={{...styles.button, ...this.compareTypes('Created')
+      <div style={{...styles.button, ...this.isTypeSelected('Created')
         ? styles.selectedButton
         : {}}}
         onClick={()=>this.handleTypeChange("Created")}>New</div>
-      <div style={{...styles.button, ...this.compareTypes('Hot')
+      <div style={{...styles.button, ...this.isTypeSelected('Hot')
         ? styles.selectedButton
         : {}}}
         onClick={()=>this.handleTypeChange("Hot")}>Hot</div>
-      <div style={{...styles.button, ...this.compareTypes('Trending')
+      <div style={{...styles.button, ...this.isTypeSelected('Trending')
         ? styles.selectedButton
         : {}}}
         onClick={()=>this.handleTypeChange("Trending")}>Trending</div>
-      <div style={{...styles.button, ...this.compareTypes('Promoted')
+      <div style={{...styles.button, ...this.isTypeSelected('Promoted')
         ? styles.selectedButton
         : {}}}
         onClick={()=>this.handleTypeChange("Promoted")}>Promoted</div>

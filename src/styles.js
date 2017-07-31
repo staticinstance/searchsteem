@@ -31,5 +31,8 @@ export default {
   typeButtons: {
     position: 'relative',
     top: -1,
+  },
+  tagButtons: {
+    paddingTop: 5,
   }
 }
