@@ -97,7 +97,9 @@ class App extends Component {
   }
 
   getTrendingPosts(){
-    this.setState({loading: true});
+    if(!this.state.loading){
+      this.setState({loading: true});
+    }
     steem.api['getDiscussionsByTrending']({
       tag: "",
       limit: 100
@@ -137,14 +139,18 @@ class App extends Component {
   }
 
   handleTypeChange(value){
-    this.setState({loading: true});
+    if(!this.state.loading){
+      this.setState({loading: true});
+    }
     this.setState({
       type: value
     });
   }
 
   toggleNSFW(){
-    this.setState({loading: true});
+    if(!this.state.loading){
+      this.setState({loading: true});
+    }
     this.setState({
       nsfw: !this.state.nsfw,
       shownNSFWPosts: this.state.nsfw ? {} : this.state.shownNSFWPosts
@@ -153,7 +159,9 @@ class App extends Component {
   }
 
   handleQueryChange(value){
-    this.setState({loading: true});
+    if(!this.state.loading){
+      this.setState({loading: true});
+    }
     this.setState({
       query: value
     });
@@ -221,7 +229,7 @@ class App extends Component {
                     <a href={`https://steemit.com${post.url}`} target="_blank"><img alt={post.title} title={post.title} style={styles.postImage} src={defaultPhoto}/></a>
                   </td>
                   <td style={{verticalAlign: 'top'}}>
-                    <span style={{paddingRight: 20}}>{this.renderNSFWSingleToggle(post.id)}{this.renderNSFWToggle()}</span>
+                    <span style={{paddingRight: 10}}>{this.renderNSFWSingleToggle(post.id)}{this.renderNSFWToggle()}</span>
                     <a style={{fontWeight: "bold", color: "#000000", textDecoration: "none"}}>This post has been tagged with "Not Safe For Work"</a>
                     <div style={{paddingTop: 10}}>{this.renderPostMetaData(post)}</div>
                   </td>
@@ -236,15 +244,13 @@ class App extends Component {
                   }
                 </td>
                 <td style={{verticalAlign: 'top'}}>
-                      {post.tags && post.tags.includes("nsfw")
-                        ? <span style={{paddingRight: 20}}>{this.renderNSFWSingleToggle(post.id)}{this.renderNSFWToggle()}</span>
-                        : null}
-                    <div>
-                      <a style={{fontWeight: "bold", color: "#000000", textDecoration: "none"}} href={`https://steemit.com${post.url}`} target="_blank">{post.title}</a>
-                    </div>
-                    <div style={{paddingTop: 10}}>
-                      {this.renderPostMetaData(post)}
-                    </div>
+                  {post.tags && post.tags.includes("nsfw")
+                    ? <span style={{paddingRight: 10}}>{this.renderNSFWSingleToggle(post.id)}{this.renderNSFWToggle()}</span>
+                    : null}
+                  <a style={{fontWeight: "bold", color: "#000000", textDecoration: "none"}} href={`https://steemit.com${post.url}`} target="_blank">{post.title}</a>
+                  <div style={{paddingTop: 10}}>
+                    {this.renderPostMetaData(post)}
+                  </div>
                 </td>
               </tr>)}
             </tbody></table>)})
@@ -311,7 +317,7 @@ class App extends Component {
             : this.getNotFoundMessage()
           }
         </div>
-        <div style={{width: "100%", position: "absolute", top: this.state.query && this.state.posts.length ? 109 : 93, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
+        <div style={{width: "100%", position: "absolute", top: 93, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
           {this.renderPosts()}
         </div>
       </div>
