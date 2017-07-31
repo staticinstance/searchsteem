@@ -111,7 +111,6 @@ class App extends Component {
     let posts = [];
     this.total = this.state.query.trim().split(" ").length;
     this.state.query.trim().split(" ").forEach((query, i) => {
-      this.setState({loading: true});
       if(query !== " "){
         steem.api[`getDiscussionsBy${this.state.type}`]({
           tag: query,
@@ -128,7 +127,7 @@ class App extends Component {
               return deduped;
             }, []);
 
-            posts = posts.concat(result).sort((a,b) => this.sortPostsByTags(a,b)).sort((a,b) => this.sortPostsByDate(a,b));
+            posts = posts.concat(result).sort((a,b) => this.sortPostsByTags(a,b));
             if(i === this.total - 1){
               this.setState({loading: false, posts: posts});
             }
@@ -138,12 +137,14 @@ class App extends Component {
   }
 
   handleTypeChange(value){
+    this.setState({loading: true});
     this.setState({
       type: value
     });
   }
 
   toggleNSFW(){
+    this.setState({loading: true});
     this.setState({
       nsfw: !this.state.nsfw,
       shownNSFWPosts: this.state.nsfw ? {} : this.state.shownNSFWPosts
@@ -152,9 +153,9 @@ class App extends Component {
   }
 
   handleQueryChange(value){
+    this.setState({loading: true});
     this.setState({
-      query: value,
-      posts: []
+      query: value
     });
   }
 
@@ -285,7 +286,7 @@ class App extends Component {
 
   getLoadingMessage(){
     return this.state.query
-      ? <div style={{padding: 10, fontSize: 14}}>Loading results for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>...</div>
+      ? <div style={{padding: 10, fontSize: 14}}>Searching for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>...</div>
       : <div style={{padding: 10, fontSize: 14}}>Loading {this.state.type === "Created" ? "New" : this.state.type} posts...</div>
   }
 
@@ -302,18 +303,13 @@ class App extends Component {
   getPostList(){
     return <div style={{width: "100%"}}>
         <div style={{width: "100%",borderBottom: "1px solid lightgray", padding: 10, fontSize: 14}}>
-          {this.state.query && this.state.posts.length ? (<div>
-            Viewing results for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>
-          <div>View results for <span style={{fontWeight: "bold"}}>{this.state.query}</span> on steemit (<a title="view on steemit" href={`https://steemit.com/created/${this.state.query.toLowerCase()}`} target="_blank">
-            new
-          </a> | <a title="view on steemit" href={`https://steemit.com/hot/${this.state.query.toLowerCase()}`} target="_blank">
-            hot
-          </a> | <a title="view on steemit" href={`https://steemit.com/trending/${this.state.query.toLowerCase()}`} target="_blank">
-            trending
-          </a> | <a title="view on steemit" href={`https://steemit.com/promoted/${this.state.query.toLowerCase()}`} target="_blank">
-            promoted
-          </a>)</div></div>) : this.getNotFoundMessage()}
-
+          {
+            this.state.query && this.state.posts.length
+            ? <div>
+                Viewing results for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>
+              </div>
+            : this.getNotFoundMessage()
+          }
         </div>
         <div style={{width: "100%", position: "absolute", top: this.state.query && this.state.posts.length ? 109 : 93, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
           {this.renderPosts()}
