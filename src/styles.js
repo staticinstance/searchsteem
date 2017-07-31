@@ -34,5 +34,10 @@ export default {
   tagButtons: {
     paddingTop: 5,
     paddingBottom: 8,
+  },
+  loadingImage: {
+    height: 25,
+    verticalAlign: "middle",
+    textAlign: "center"
   }
 }

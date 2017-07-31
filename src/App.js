@@ -4,6 +4,7 @@ import deepEqual from 'deep-equal';
 import moment from 'moment';
 import steem from 'steem';
 import logo from './assets/steem.png';
+import loading from './assets/loading.gif';
 import defaultPhoto from './assets/no-photo.png';
 import styles from './styles';
 
@@ -297,9 +298,22 @@ class App extends Component {
   }
 
   getLoadingMessage(){
-    return this.state.query
-      ? <div style={{padding: 10, fontSize: 14}}>Searching for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>...</div>
-      : <div style={{padding: 10, fontSize: 14}}>Loading {this.state.type === "Created" ? "New" : this.state.type} posts...</div>
+    return <div>
+      {
+        this.state.query
+          ? <span>Searching for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span></span>
+          : <span>Loading {this.state.type === "Created" ? "New" : this.state.type} posts</span>
+      }
+      <div style={{
+          backgroundImage: `url(${loading})`,
+          backgroundRepeat: "no-repeat",
+          backgroundAttachment: "fixed",
+          width: "100%",
+          position: "absolute",
+          top: 93, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
+
+      </div>
+  </div>
   }
 
   getNotFoundMessage(){
@@ -312,15 +326,17 @@ class App extends Component {
       : <div>{this.state.type === "Created" ? "New" : this.state.type} posts</div>
   }
 
-  getPostList(){
+  renderPostList(){
     return <div style={{width: "100%"}}>
         <div style={{width: "100%",borderBottom: "1px solid lightgray", padding: 10, fontSize: 14}}>
           {
-            this.state.query && this.state.posts.length
-            ? <div>
-                Viewing results for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>
-              </div>
-            : this.getNotFoundMessage()
+            this.state.loading === true
+              ? this.getLoadingMessage()
+              : this.state.query && this.state.posts.length
+                ? <div>
+                    Viewing results for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>
+                  </div>
+                : this.getNotFoundMessage()
           }
         </div>
         <div style={{width: "100%", position: "absolute", top: 93, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
@@ -377,16 +393,10 @@ class App extends Component {
     </span>
   }
 
-  renderPostsPanel(){
-    return this.state.loading === true
-      ? this.getLoadingMessage()
-      : this.getPostList()
-  }
-
   render() {
     return (<div style={{width: "100%", paddingBottom: 0, overflow: "hidden"}}>
             {this.renderHeader()}
-            {this.renderPostsPanel()}
+            {this.renderPostList()}
         </div>
     );
   }
