@@ -101,14 +101,25 @@ class App extends Component {
     let posts = [];
     this.total = this.state.query.trim().split(" ").length;
     this.state.query.trim().split(" ").forEach((query, i) => {
-      this.setState({posts: [], loading: true});
+      this.setState({loading: true});
       if(query !== " "){
         steem.api[`getDiscussionsBy${this.state.type}`]({
           tag: query,
           limit: 100
         }, (error, result) => {
+            //dedupe
+            result = result.reduce((deduped, item) => {
+              const notFound = posts.filter(r => {
+                return r.id === item.id
+              }).length === 0
+              if(notFound){
+                deduped.push(item)
+              }
+              return deduped;
+            }, []);
+
+            posts = posts.concat(result).sort((a,b) => this.sortPostsByTags(a,b))
             if(i === this.total - 1){
-              posts = posts.concat(result).sort((a,b) => this.sortPostsByTags(a,b));
               this.setState({loading: false, posts: posts});
             }
         })
