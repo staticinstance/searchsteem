@@ -26,7 +26,6 @@ export default {
   selectedButton: {
     color: '#FFFFFF',
     backgroundColor: "#4ba2f2",
-    border: '1px solid #FFFFFF',
   },
   typeButtons: {
     position: 'relative',
