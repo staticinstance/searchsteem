@@ -79,7 +79,7 @@ class App extends Component {
   }
 
   componentDidUpdate(nextProps, nextState){
-    if((!(/\s+$/.test(nextState.query)) && !deepEqual(nextState.query, this.state.query) && nextState.query.replace(" ", "") !== this.state.query.replace(" ", ""))
+    if((!deepEqual(nextState.query, this.state.query) && nextState.query.replace(" ", "") !== this.state.query.replace(" ", ""))
         || !deepEqual(nextState.type, this.state.type)){
          if(this.searchTimeout){
            clearTimeout(this.searchTimeout);
@@ -121,31 +121,35 @@ class App extends Component {
     this.total = this.state.query.trim().split(" ").length;
     this.state.query.trim().split(" ").forEach((query, i) => {
       if(query !== " "){
-        steem.api[`getDiscussionsBy${this.state.type}`]({
-          tag: query,
-          limit: 100
-        }, (error, result) => {
-            //dedupe
-            if(error || !result || !result.reduce){
-              console.log(error)
-              this.setState({loading: false, posts: []});
-              return;
-            }
-            result = result.reduce((deduped, item) => {
-              const notFound = posts.filter(r => {
-                return r.id === item.id
-              }).length === 0
-              if(notFound){
-                deduped.push(item)
+        try{
+          steem.api[`getDiscussionsBy${this.state.type}`]({
+            tag: query,
+            limit: 100
+          }, (error, result) => {
+              //dedupe
+              if(error || !result || !result.reduce){
+                console.log(error)
+                this.setState({loading: false, posts: []});
+                return;
               }
-              return deduped;
-            }, []);
+              result = result.reduce((deduped, item) => {
+                const notFound = posts.filter(r => {
+                  return r.id === item.id
+                }).length === 0
+                if(notFound){
+                  deduped.push(item)
+                }
+                return deduped;
+              }, []);
 
-            posts = posts.concat(result).sort((a,b) => this.sortPostsByTags(a,b));
-            if(i === this.total - 1){
-              this.setState({loading: false, posts: posts});
-            }
-        })
+              posts = posts.concat(result).sort((a,b) => this.sortPostsByTags(a,b));
+              if(i === this.total - 1){
+                this.setState({loading: false, posts: posts});
+              }
+          });
+        }catch(e){
+          this.setState({loading: false, posts: []});
+        }
       }
     })
   }
@@ -339,9 +343,9 @@ class App extends Component {
     return <div style={{width: "100%"}}>
         <div style={{width: "100%",borderBottom: "1px solid lightgray", padding: 10, fontSize: 14}}>
           {
-            (this.state.loading === true && !this.state.posts.length)
+            (this.state.loading === true && Array.isArray(this.state.posts) && this.state.posts.length)
               ? this.getLoadingMessage()
-              : this.state.query && this.state.posts.length
+              : this.state.query && Array.isArray(this.state.posts) && this.state.posts.length
                 ? <div>
                     Viewing results for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>
                   </div>
