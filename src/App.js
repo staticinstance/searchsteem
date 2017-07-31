@@ -101,12 +101,12 @@ class App extends Component {
 
   renderNSFWToggle(style){
     return null;
-    return <span
-      style={{...styles.button, ...this.state.nsfw ? styles.nsfwButton : {}}}
-      title={`Posts tagged with "Not Safe For Work" are currently being ${this.state.nsfw ? 'shown' : 'hidden'}.  Click to ${this.state.nsfw ? 'hide' : 'show'} them.`}
-      onClick={()=>this.toggleNSFW()}>
-      {`${this.state.nsfw ? 'HIDE' : 'SHOW'} ALL NSFW POSTS`}
-    </span>
+    // return <span
+    //   style={{...styles.button, ...this.state.nsfw ? styles.nsfwButton : {}}}
+    //   title={`Posts tagged with "Not Safe For Work" are currently being ${this.state.nsfw ? 'shown' : 'hidden'}.  Click to ${this.state.nsfw ? 'hide' : 'show'} them.`}
+    //   onClick={()=>this.toggleNSFW()}>
+    //   {`${this.state.nsfw ? 'HIDE' : 'SHOW'} ALL NSFW POSTS`}
+    // </span>
   }
 
   renderNSFWSingleToggle(id){
