@@ -108,8 +108,10 @@ class App extends Component {
       tag: "",
       limit: 100
     }, (error, result) => {
+        if(!this.state.query){
           this.setState({loading: false, posts: result});
           this.forceUpdate()
+        }
       })
   }
 
