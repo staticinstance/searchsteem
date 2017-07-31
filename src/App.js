@@ -83,6 +83,10 @@ class App extends Component {
          if(this.searchTimeout){
            clearTimeout(this.searchTimeout);
          }
+         this.setState({
+           loading: true,
+           posts: []
+         })
          this.searchTimeout=setTimeout(() => this.searchSteemit(), 500);
     }
   }
