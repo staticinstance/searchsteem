@@ -79,7 +79,7 @@ class App extends Component {
   }
 
   componentDidUpdate(nextProps, nextState){
-    if((!deepEqual(nextState.query, this.state.query) && nextState.query.replace(" ", "") !== this.state.query.replace(" ", ""))
+    if((!(/\s+$/.test(nextState.query)) && !deepEqual(nextState.query, this.state.query) && nextState.query.replace(" ", "") !== this.state.query.replace(" ", ""))
         || !deepEqual(nextState.type, this.state.type)){
          if(this.searchTimeout){
            clearTimeout(this.searchTimeout);
@@ -124,7 +124,7 @@ class App extends Component {
         steem.api[`getDiscussionsBy${this.state.type}`]({
           tag: query,
           limit: 100
-        }, (error, result) => {
+        }, (error, result=[]) => {
             //dedupe
             result = result.reduce((deduped, item) => {
               const notFound = posts.filter(r => {
@@ -166,7 +166,11 @@ class App extends Component {
   }
 
   handleQueryChange(value){
-    if(!this.state.loading && !(/\s+$/.test(value))){
+    if(!this.lastQuery){
+      this.lastQuery = value;
+    }
+    if(!this.state.loading && !(/\s+$/.test(value)) && value !== this.lastQuery){
+      this.lastQuery = value;
       this.setState({loading: true});
     }
     this.setState({
@@ -330,7 +334,7 @@ class App extends Component {
     return <div style={{width: "100%"}}>
         <div style={{width: "100%",borderBottom: "1px solid lightgray", padding: 10, fontSize: 14}}>
           {
-            this.state.loading === true
+            (this.state.loading === true && !this.state.posts.length)
               ? this.getLoadingMessage()
               : this.state.query && this.state.posts.length
                 ? <div>
