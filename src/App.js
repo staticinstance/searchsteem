@@ -166,11 +166,11 @@ class App extends Component {
   }
 
   handleQueryChange(value){
-    if(!this.state.loading){
+    if(!this.state.loading && !(/\s+$/.test(value))){
       this.setState({loading: true});
     }
     this.setState({
-      query: value
+      query: value.toLowerCase()
     });
   }
 
@@ -286,7 +286,7 @@ class App extends Component {
                   style={{...styles.button, ...this.state.query.split(" ").includes(tag)
                     ? styles.selectedButton
                     : {}}}
-                  onClick={() => this.setState({query: tag})} target="_blank">
+                  onClick={() => this.setState({query: tag.toLowerCase()})} target="_blank">
                         {tag}
                       </span>)
                     }
@@ -308,10 +308,10 @@ class App extends Component {
           backgroundImage: `url(${loading})`,
           backgroundRepeat: "no-repeat",
           backgroundAttachment: "fixed",
+          backgroundSize: 'contain',
           width: "100%",
           position: "absolute",
           top: 93, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
-
       </div>
   </div>
   }

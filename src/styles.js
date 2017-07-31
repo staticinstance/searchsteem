@@ -25,7 +25,7 @@ export default {
   },
   selectedButton: {
     color: '#FFFFFF',
-    backgroundColor: "#4ba2f2",
+    backgroundColor: "#1a5099",
   },
   typeButtons: {
     position: 'relative',
@@ -34,10 +34,5 @@ export default {
   tagButtons: {
     paddingTop: 5,
     paddingBottom: 8,
-  },
-  loadingImage: {
-    height: 25,
-    verticalAlign: "middle",
-    textAlign: "center"
   }
 }
