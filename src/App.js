@@ -124,8 +124,13 @@ class App extends Component {
         steem.api[`getDiscussionsBy${this.state.type}`]({
           tag: query,
           limit: 100
-        }, (error, result=[]) => {
+        }, (error, result) => {
             //dedupe
+            if(error || !result || !result.reduce){
+              console.log(error)
+              this.setState({loading: false, posts: []});
+              return;
+            }
             result = result.reduce((deduped, item) => {
               const notFound = posts.filter(r => {
                 return r.id === item.id
@@ -218,7 +223,7 @@ class App extends Component {
   }
 
   renderPosts(){
-    const { posts, shownNSFWPosts } = this.state;
+    const { posts = [], shownNSFWPosts } = this.state;
     return (
       <div style={{width: "100%", overflowX: "hidden"}}>
       {posts.map((post, i) => {
