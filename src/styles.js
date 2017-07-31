@@ -34,5 +34,6 @@ export default {
   },
   tagButtons: {
     paddingTop: 5,
+    paddingBottom: 8,
   }
 }

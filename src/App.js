@@ -21,6 +21,29 @@ class App extends Component {
     };
   }
 
+  getTagsFromPost(post){
+    const metadata = JSON.parse(post.json_metadata);
+    return metadata.tags;
+  }
+
+  sortPostsByTags(a,b){
+    const totals = {
+      a: 0,
+      b: 0,
+    }
+
+    this.state.query.split(" ").forEach(tag => {
+      if(this.getTagsFromPost(a).includes(tag)){
+        totals.a++;
+      }
+      if(this.getTagsFromPost(a).includes(tag)){
+        totals.b++;
+      }
+    });
+
+    return totals.b - totals.a;
+  }
+
   compareVotes(a,b) {
     if (a.rshares > b.rshares){
       return -1;
@@ -45,26 +68,52 @@ class App extends Component {
   }
 
   componentDidUpdate(nextProps, nextState){
-    if(!deepEqual(nextState.query, this.state.query) ||
-       !deepEqual(nextState.type, this.state.type)){
-         this.searchSteemit();
+    if((!deepEqual(nextState.query, this.state.query) && nextState.query.replace(" ", "") !== this.state.query.replace(" ", ""))
+        || !deepEqual(nextState.type, this.state.type)){
+         if(this.searchTimeout){
+           clearTimeout(this.searchTimeout);
+         }
+         this.searchTimeout=setTimeout(() => this.searchSteemit(), 500);
     }
   }
 
   componentDidMount(){
-    this.searchInput.focus()
+    this.searchInput.focus();
+    this.getTrendingPosts();
   }
 
   componentWillMount(){
     this.searchSteemit();
   }
 
-  searchSteemit(){
+  getTrendingPosts(){
     this.setState({loading: true});
-    steem.api[`getDiscussionsBy${this.state.type}`]({
-      tag: this.state.query,
+    steem.api['getDiscussionsByTrending']({
+      tag: "",
       limit: 100
-    }, (error, result) => {this.setState({loading: false, posts: result.map(post => post)}); this.forceUpdate()});
+    }, (error, result) => {
+          this.setState({loading: false, posts: result});
+          this.forceUpdate()
+      })
+  }
+
+  searchSteemit(){
+    let posts = [];
+    this.total = this.state.query.trim().split(" ").length;
+    this.state.query.trim().split(" ").forEach((query, i) => {
+      this.setState({posts: [], loading: true});
+      if(query !== " "){
+        steem.api[`getDiscussionsBy${this.state.type}`]({
+          tag: query,
+          limit: 100
+        }, (error, result) => {
+            if(i === this.total - 1){
+              posts = posts.concat(result).sort((a,b) => this.sortPostsByTags(a,b));
+              this.setState({loading: false, posts: posts});
+            }
+        })
+      }
+    })
   }
 
   handleTypeChange(value){
@@ -82,9 +131,9 @@ class App extends Component {
   }
 
   handleQueryChange(value){
-    value = value.replace(/ /g,'');
     this.setState({
-      query: value
+      query: value,
+      posts: []
     });
   }
 
@@ -141,13 +190,12 @@ class App extends Component {
             paddingTop: 5,
             paddingBottom: 0,
             height: 100,
-            maxHeight: 100,
             width: "100%",
             borderBottom: i!==posts.length - 1 ? "1px solid lightgray" : "none"}}>
           <tbody>
             {!this.state.nsfw && post.tags && post.tags.includes("nsfw") && !shownNSFWPosts[post.id]
               ? <tr>
-                  <td style={{position: "relative", height: 100, maxHeight: 100, maxWidth: 100, width: 100, overflow: "hidden"}}>
+                  <td style={{position: "relative", height: 100, maxWidth: 100, width: 100, overflow: "hidden"}}>
                     <a href={`https://steemit.com${post.url}`} target="_blank"><img alt={post.title} title={post.title} style={styles.postImage} src={defaultPhoto}/></a>
                   </td>
                   <td style={{verticalAlign: 'top'}}>
@@ -158,7 +206,7 @@ class App extends Component {
                 </tr>
               : (
                 <tr>
-                  <td style={{position: "relative", height: 100, maxHeight: 100, maxWidth: 100, width: 100, overflow: "hidden"}}>
+                  <td style={{position: "relative", height: 100, maxWidth: 100, width: 100, overflow: "hidden"}}>
                   {
                     image
                       ? <a href={`https://steemit.com${post.url}`} target="_blank"><img alt={post.title} title={post.title} style={styles.postImage} src={image[0]}/></a>
@@ -169,9 +217,9 @@ class App extends Component {
                       {post.tags && post.tags.includes("nsfw")
                         ? <span style={{paddingRight: 20}}>{this.renderNSFWSingleToggle(post.id)}{this.renderNSFWToggle()}</span>
                         : null}
-                    <span style={{width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
+                    <div>
                       <a style={{fontWeight: "bold", color: "#000000", textDecoration: "none"}} href={`https://steemit.com${post.url}`} target="_blank">{post.title}</a>
-                    </span>
+                    </div>
                     <div style={{paddingTop: 10}}>
                       {this.renderPostMetaData(post)}
                     </div>
@@ -192,23 +240,24 @@ class App extends Component {
             </a> (<a
               href={`http://steem.cool/@${post.author}`}
               target="_blank">steem.cool</a> | <a
-               href={`http://steemd.com/@${post.author}`}
-               target="_blank">steemd.com</a> | <a
-                href={`http://steemdb.com/@${post.author}`}
-                target="_blank">steemdb.com</a>)
-                {
-                  post.tags && post.tags[0]
-                    ? <div style={styles.tagButtons}>{ post.tags.map(tag => <span
-                      style={{...styles.button, ...this.state.query === tag
-                        ? styles.selectedButton
-                        : {}}}
-                      onClick={() => this.setState({query: tag})} target="_blank">
-                            {tag}
-                          </span>)
-                        }
-                      </div>
-                    : null
-                }
+              href={`http://steemd.com/@${post.author}`}
+              target="_blank">steemd.com</a> | <a
+              href={`http://steemdb.com/@${post.author}`}
+              target="_blank">steemdb.com</a>)
+            {
+              post.tags && post.tags[0]
+                ? <div style={styles.tagButtons}>{ post.tags.map(tag => <span
+                  key={tag}
+                  style={{...styles.button, ...this.state.query.split(" ").includes(tag)
+                    ? styles.selectedButton
+                    : {}}}
+                  onClick={() => this.setState({query: tag})} target="_blank">
+                        {tag}
+                      </span>)
+                    }
+                  </div>
+                : null
+            }
           </div>
     </div>
   }
@@ -257,7 +306,7 @@ class App extends Component {
           <img alt='SearchSteem!' title='SearchSteem!' style={{height: 35, verticalAlign: "middle", paddingRight: 10}} src={logo} />
         </span>
         <span>
-            <input ref={(input) => { this.searchInput = input; }} style={{width: 300}} onChange={(e)=>this.handleQueryChange(e.target.value)} type="text" value={this.state.query} placeholder="Search a Tag (one word only)" />
+            <input ref={(input) => { this.searchInput = input; }} style={{width: 300}} onChange={(e)=>this.handleQueryChange(e.target.value)} type="text" value={this.state.query} placeholder="Search..." />
         <span style={{position: "relative", left: 10}}>
           {this.renderPostTypeButtons()}
           {this.renderNSFWToggle()}
@@ -298,6 +347,7 @@ class App extends Component {
         onClick={()=>this.handleTypeChange("Promoted")}>Promoted</div>
     </span>
   }
+
   renderPostsPanel(){
     return this.state.loading === true
       ? this.getLoadingMessage()
