@@ -54,6 +54,16 @@ class App extends Component {
     return 0;
   }
 
+  sortPostsByDate(a,b) {
+    if (a.created > b.created){
+      return -1;
+    }
+    if (a.created < b.created){
+      return 1;
+    }
+    return 0;
+  }
+
   shouldComponentUpdate(nextProps, nextState){
     if(!deepEqual(nextState.query, this.state.query) ||
        !deepEqual(nextState.shownNSFWPosts, this.state.shownNSFWPosts) ||
@@ -118,7 +128,7 @@ class App extends Component {
               return deduped;
             }, []);
 
-            posts = posts.concat(result).sort((a,b) => this.sortPostsByTags(a,b))
+            posts = posts.concat(result).sort((a,b) => this.sortPostsByTags(a,b)).sort((a,b) => this.sortPostsByDate(a,b));
             if(i === this.total - 1){
               this.setState({loading: false, posts: posts});
             }
