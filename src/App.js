@@ -17,7 +17,7 @@ class App extends Component {
       posts: [],
       nsfw: false,
       loading: false,
-      shownNSFWPosts: []
+      shownNSFWPosts: {}
     };
   }
 
@@ -38,7 +38,6 @@ class App extends Component {
        !deepEqual(nextState.nsfw, this.state.nsfw) ||
        !deepEqual(nextState.posts, this.state.posts) ||
        !deepEqual(nextState.loading, this.state.loading)){
-         console.log('updating')
       return true;
     } else {
       return false;
@@ -47,8 +46,7 @@ class App extends Component {
 
   componentDidUpdate(nextProps, nextState){
     if(!deepEqual(nextState.query, this.state.query) ||
-       !deepEqual(nextState.type, this.state.type) ||
-       !deepEqual(nextState.nsfw, this.state.nsfw)){
+       !deepEqual(nextState.type, this.state.type)){
          this.searchSteemit();
     }
   }
@@ -77,8 +75,10 @@ class App extends Component {
 
   toggleNSFW(){
     this.setState({
-      nsfw: !this.state.nsfw
+      nsfw: !this.state.nsfw,
+      shownNSFWPosts: this.state.nsfw ? {} : this.state.shownNSFWPosts
     });
+    this.forceUpdate();
   }
 
   handleQueryChange(value){
@@ -100,6 +100,7 @@ class App extends Component {
   }
 
   renderNSFWToggle(style){
+    return null;
     return <span
       style={{...styles.button, ...this.state.nsfw ? styles.nsfwButton : {}}}
       title={`Posts tagged with "Not Safe For Work" are currently being ${this.state.nsfw ? 'shown' : 'hidden'}.  Click to ${this.state.nsfw ? 'hide' : 'show'} them.`}
@@ -110,15 +111,19 @@ class App extends Component {
 
   renderNSFWSingleToggle(id){
     return <span
-      style={{...styles.button, ...this.state.nsfw ? styles.nsfwButton : {}}}
-      onClick={()=>this.setState({
-        shownNSFWPosts: (()=>{
-          const shownNSFWPosts = this.state.shownNSFWPosts;
-          shownNSFWPosts.push(id);
-          return shownNSFWPosts;
-        })()
-      })}>
-      {`${this.state.nsfw ? 'HIDE THIS' : 'SHOW THIS'} NSFW POST`}
+      style={{...styles.button, ...this.state.shownNSFWPosts[id] ? styles.nsfwButton : {}}}
+      onClick={()=>{
+        this.setState({
+          shownNSFWPosts: (()=>{
+            const shownNSFWPosts = this.state.shownNSFWPosts;
+            shownNSFWPosts[id] = !this.state.shownNSFWPosts[id];
+            return shownNSFWPosts;
+          })()
+        })
+        this.forceUpdate();
+      }
+    }>
+      {`${this.state.shownNSFWPosts[id] ? 'HIDE THIS' : 'SHOW THIS'} NSFW POST`}
     </span>
   }
 
@@ -130,7 +135,6 @@ class App extends Component {
       const metadata = JSON.parse(post.json_metadata);
       const image = metadata.image;
       post.tags = metadata.tags;
-      console.log('includes', shownNSFWPosts.includes(post.id), post.id)
       return  (
         <table key={i} style={{
             padding: 10,
@@ -140,17 +144,19 @@ class App extends Component {
             width: "100%",
             borderBottom: i!==posts.length - 1 ? "1px solid lightgray" : "none"}}>
           <tbody>
-            {!this.state.nsfw && post.tags && post.tags.includes("nsfw") && !shownNSFWPosts.includes(post.id)
+            {!this.state.nsfw && post.tags && post.tags.includes("nsfw") && !shownNSFWPosts[post.id]
               ? <tr>
-                  <td>
-                    This post has been tagged with "Not Safe For Work"
-                    {this.renderNSFWSingleToggle(post.id)}
-                    {this.renderNSFWToggle()}
+                  <td style={{position: "relative", height: 100, maxHeight: 100, maxWidth: 100, width: 100, overflow: "hidden"}}>
+                    <a href={`https://steemit.com${post.url}`} target="_blank"><img alt={post.title} title={post.title} style={styles.postImage} src={defaultPhoto}/></a>
+                  </td>
+                  <td style={{verticalAlign: 'top'}}>
+                    <span style={{paddingRight: 20}}>{this.renderNSFWSingleToggle(post.id)}{this.renderNSFWToggle()}</span>
+                    <a style={{fontWeight: "bold", color: "#000000", textDecoration: "none"}}>This post has been tagged with "Not Safe For Work"</a>
                     <div style={{paddingTop: 10}}>{this.renderPostMetaData(post)}</div>
                   </td>
                 </tr>
               : (
-                <tr style={{width: "100%"}}>
+                <tr>
                   <td style={{position: "relative", height: 100, maxHeight: 100, maxWidth: 100, width: 100, overflow: "hidden"}}>
                   {
                     image
@@ -158,13 +164,16 @@ class App extends Component {
                       : <a href={`https://steemit.com${post.url}`} target="_blank"><img alt={post.title} title={post.title} style={styles.postImage} src={defaultPhoto}/></a>
                   }
                 </td>
-                <td style={{position: "relative", verticalAlign: "middle", width: "auto"}}>
-                  <div style={{position: "absolute", top: 3, width: '100%'}}>
-                    <div style={{paddingBottom: 20, fontWeight: "bold", fontSize: 16, marginTop: 0, width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
-                      <a style={{color: "#000000", textDecoration: "none"}} href={`https://steemit.com${post.url}`} target="_blank">{post.title}</a>
+                <td style={{verticalAlign: 'top'}}>
+                      {post.tags && post.tags.includes("nsfw")
+                        ? <span style={{paddingRight: 20}}>{this.renderNSFWSingleToggle(post.id)}{this.renderNSFWToggle()}</span>
+                        : null}
+                    <span style={{width: "100%", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
+                      <a style={{fontWeight: "bold", color: "#000000", textDecoration: "none"}} href={`https://steemit.com${post.url}`} target="_blank">{post.title}</a>
+                    </span>
+                    <div style={{paddingTop: 10}}>
+                      {this.renderPostMetaData(post)}
                     </div>
-                    {this.renderPostMetaData(post)}
-                  </div>
                 </td>
               </tr>)}
             </tbody></table>)})
@@ -259,7 +268,7 @@ class App extends Component {
   }
 
   renderPostTypeButtons(){
-    return <span>
+    return <span style={styles.typeButtons}>
       <div style={{...styles.button, ...this.compareTypes('Created')
         ? styles.selectedButton
         : {}}}

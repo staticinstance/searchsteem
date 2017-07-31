@@ -7,9 +7,6 @@ export default {
   },
   button: {
       cursor: 'pointer',
-      position: 'relative',
-      left: 7,
-      top: -2,
       padding: 5,
       fontSize: 8,
       color: '#1a5099',
@@ -30,5 +27,9 @@ export default {
     color: '#FFFFFF',
     backgroundColor: "#4ba2f2",
     border: '1px solid #FFFFFF',
+  },
+  typeButtons: {
+    position: 'relative',
+    top: -3,
   }
 }
