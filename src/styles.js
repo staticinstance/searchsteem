@@ -1,5 +1,3 @@
-import loading from './assets/loading.gif';
-
 export default {
   searchStatusMessageContainer: {
     width: "100%",
@@ -85,6 +83,7 @@ export default {
   },
   mainContainer: {
     width: "100%",
+    height: "100%",
     paddingBottom: 0,
     overflow: "hidden",
   },
@@ -96,17 +95,22 @@ export default {
     borderRadius: 3,
   },
   loadingPanel: {
-    backgroundImage: `url(${loading})`,
-    backgroundRepeat: "no-repeat",
-    backgroundAttachment: "fixed",
-    backgroundSize: 'contain',
     width: "100%",
+    height: "60%",
     position: "absolute",
     top: 93,
     bottom: 0,
     left: 0,
     right: 0,
     overflow: "auto",
+    verticalAlign: "middle",
+    textAlign: "center",
+  },
+  loadingImage: {
+    height: 100,
+    width: 100,
+    position: "relative",
+    top: "50%",
   },
   metadataContainer: {
     paddingTop: 10
@@ -150,5 +154,5 @@ export default {
     maxWidth: 100,
     width: 100,
     overflow: "hidden"
-  }
+  },
 }

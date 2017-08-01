@@ -344,6 +344,7 @@ class App extends Component {
               ? <div>
                 {this.getLoadingMessage()}
                 <div style={styles.loadingPanel}>
+                  <img src={logo} style={styles.loadingImage} className="spinner" alt={this.getLoadingMessage()}/>
                 </div>
               </div>
               : this.state.query && Array.isArray(this.state.posts) && this.state.posts.length
