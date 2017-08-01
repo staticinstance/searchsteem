@@ -4,7 +4,6 @@ import deepEqual from 'deep-equal';
 import moment from 'moment';
 import steem from 'steem';
 import logo from './assets/steem.png';
-import loading from './assets/loading.gif';
 import defaultPhoto from './assets/no-photo.png';
 import styles from './styles';
 
@@ -227,17 +226,11 @@ class App extends Component {
       const image = metadata.image;
       post.tags = metadata.tags;
       return  (
-        <table key={i} style={{
-            padding: 10,
-            paddingTop: 5,
-            paddingBottom: 0,
-            height: 100,
-            width: "100%",
-            borderBottom: i!==posts.length - 1 ? "1px solid lightgray" : "none"}}>
+        <table key={i} style={{...{borderBottom: i!==posts.length - 1 ? "1px solid lightgray" : "none"},...styles.postTable}}>
           <tbody>
             {!this.state.nsfw && post.tags && post.tags.includes("nsfw") && !shownNSFWPosts[post.id]
               ? <tr>
-                  <td style={{position: "relative", height: 100, maxWidth: 100, width: 100, overflow: "hidden"}}>
+                  <td style={styles.postTableImage}>
                     <a href={`https://steemit.com${post.url}`} target="_blank"><img alt={post.title} title={post.title} style={styles.postImage} src={defaultPhoto}/></a>
                   </td>
                   <td style={{verticalAlign: 'top'}}>
@@ -345,14 +338,7 @@ class App extends Component {
             (this.state.loading === true && Array.isArray(this.state.posts) && !this.state.posts.length)
               ? <div>
                 {this.getLoadingMessage()}
-                <div style={{
-                  backgroundImage: `url(${loading})`,
-                  backgroundRepeat: "no-repeat",
-                  backgroundAttachment: "fixed",
-                  backgroundSize: 'contain',
-                  width: "100%",
-                  position: "absolute",
-                  top: 93, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
+                <div style={styles.loadingPanel}>
                 </div>
               </div>
               : this.state.query && Array.isArray(this.state.posts) && this.state.posts.length
@@ -362,24 +348,33 @@ class App extends Component {
                 : this.getNotFoundMessage()
           }
         </div>
-        <div style={{width: "100%", position: "absolute", top: 93, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
+        <div style={styles.postContainer}>
           {this.renderPosts()}
         </div>
       </div>
   }
 
   renderHeader(){
-    return <div style={{position: "relative", height: "100%", padding: 10, borderBottom: "1px solid #1a5099", width: "100%", backgroundColor: "#4ba2f2"}}>
+    return <div style={styles.header}>
         <span>
-          <img alt='SearchSteem!' title='SearchSteem!' style={{height: 35, verticalAlign: "middle", paddingRight: 10}} src={logo} />
+          <img
+            alt='SearchSteem!'
+            title='SearchSteem!'
+            style={styles.logo}
+            src={logo} />
         </span>
         <span>
-            <input onKeyDown={(e) => this.handleSearchInputKeyDown(e)} ref={(input) => { this.searchInput = input; }} style={{width: 200}} type="text" placeholder="Search..." />
+            <input
+              onKeyDown={(e) => this.handleSearchInputKeyDown(e)}
+              ref={(input) => { this.searchInput = input; }}
+              style={styles.searchInput}
+              type="text"
+              placeholder="Search..." />
             {this.renderPostTypeButtons()}
             {this.renderNSFWToggle()}
-        <span style={{color: "#FFFFFF", fontSize: 12, float: "right", paddingTop: 10, paddingRight: 20}}>
+        <span style={styles.author}>
           created by <a
-            style={{color: "#FFFFFF", textDecoration: "none"}}
+            style={styles.authorLink}
             href="https://steemit.com/@staticinstance"
             target="_blank"
             rel="noopener noreferrer">
@@ -423,7 +418,7 @@ class App extends Component {
   }
 
   render() {
-    return (<div style={{width: "100%", paddingBottom: 0, overflow: "hidden"}}>
+    return (<div style={styles.mainContainer}>
             {this.renderHeader()}
             {this.renderPostList()}
         </div>
