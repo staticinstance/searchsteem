@@ -220,7 +220,7 @@ class App extends Component {
   renderPosts(){
     const { posts = [], shownNSFWPosts } = this.state;
     return (
-      <div style={{width: "100%", overflowX: "hidden"}}>
+      <div style={styles.postsContainer}>
       {posts.map((post, i) => {
       const metadata = JSON.parse(post.json_metadata);
       const image = metadata.image;
@@ -230,30 +230,54 @@ class App extends Component {
           <tbody>
             {!this.state.nsfw && post.tags && post.tags.includes("nsfw") && !shownNSFWPosts[post.id]
               ? <tr>
-                  <td style={styles.postTableImage}>
-                    <a href={`https://steemit.com${post.url}`} target="_blank"><img alt={post.title} title={post.title} style={styles.postImage} src={defaultPhoto}/></a>
+                  <td style={styles.nsfwDefaultImage}>
+                    <a href={`https://steemit.com${post.url}`} target="_blank">
+                    <img
+                      alt={post.title}
+                      title={post.title}
+                      style={styles.postImage}
+                      src={defaultPhoto}/>
+                    </a>
                   </td>
-                  <td style={{verticalAlign: 'top'}}>
-                    <span style={{paddingRight: 10}}>{this.renderNSFWSingleToggle(post.id)}{this.renderNSFWToggle()}</span>
-                    <a style={{fontWeight: "bold", color: "#000000", textDecoration: "none"}}>This post has been tagged with "Not Safe For Work"</a>
-                    <div style={{paddingTop: 10}}>{this.renderPostMetaData(post)}</div>
+                  <td style={styles.postInfo}>
+                    <span style={styles.nsfwToggleContainer}>
+                      {this.renderNSFWSingleToggle(post.id)}
+                      {this.renderNSFWToggle()}
+                    </span>
+                  <a style={styles.nsfwMessage}>
+                    This post has been tagged with "Not Safe For Work"
+                  </a>
+                  <div style={styles.metadataContainer}>
+                    {this.renderPostMetaData(post)}
+                  </div>
                   </td>
                 </tr>
               : (
                 <tr>
-                  <td style={{position: "relative", height: 100, maxWidth: 100, width: 100, overflow: "hidden"}}>
+                  <td style={styles.postImageContainer}>
                   {
                     image
-                      ? <a href={`https://steemit.com${post.url}`} target="_blank"><img alt={post.title} title={post.title} style={styles.postImage} src={image[0]}/></a>
-                      : <a href={`https://steemit.com${post.url}`} target="_blank"><img alt={post.title} title={post.title} style={styles.postImage} src={defaultPhoto}/></a>
+                      ? <a href={`https://steemit.com${post.url}`} target="_blank">
+                          <img alt={post.title} title={post.title} style={styles.postImage} src={image[0]}/>
+                        </a>
+                      : <a href={`https://steemit.com${post.url}`} target="_blank">
+                          <img alt={post.title} title={post.title} style={styles.postImage} src={defaultPhoto}/>
+                        </a>
                   }
                 </td>
-                <td style={{verticalAlign: 'top'}}>
+                <td style={styles.nsfwPostContainer}>
                   {post.tags && post.tags.includes("nsfw")
-                    ? <span style={{paddingRight: 10}}>{this.renderNSFWSingleToggle(post.id)}{this.renderNSFWToggle()}</span>
+                    ? <span style={styles.nsfwToggleContainer}>
+                      {this.renderNSFWSingleToggle(post.id)}
+                      {this.renderNSFWToggle()}
+                    </span>
                     : null}
-                  <a style={{fontWeight: "bold", color: "#000000", textDecoration: "none"}} href={`https://steemit.com${post.url}`} target="_blank">{post.title}</a>
-                  <div style={{paddingTop: 10}}>
+                  <a style={styles.postTitle}
+                    href={`https://steemit.com${post.url}`}
+                    target="_blank">
+                    {post.title}
+                  </a>
+                  <div style={styles.metadataContainer}>
                     {this.renderPostMetaData(post)}
                   </div>
                 </td>
@@ -263,9 +287,23 @@ class App extends Component {
   }
 
   renderPostMetaData(post){
-    return <div style={{width: '100%'}}>
-          <span title={`$${post.pending_payout_value.replace(' SBD', '')} potential payout`}>${post.pending_payout_value.replace('SBD', '')}</span> | <span style={{cursor: "pointer"}} title={this.renderVotersTitle(post)}>{post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"}</span> | {post.children} {post.children === 1 ? "comment" : "comments"} | {moment(post.created).format('MMMM Do YYYY, h:mm a')} | <a href={`https://steemit.com${post.url}`} target="_blank">view post on steemit</a>
-          <div style={{width: "100%"}}>
+    return <div>
+          <span
+            title={`$${post.pending_payout_value.replace(' SBD', '')} potential payout`}>
+            ${post.pending_payout_value.replace('SBD', '')}
+          </span> |
+            <span style={{cursor: "pointer"}}
+              title={this.renderVotersTitle(post)}>
+              {post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"}
+            </span> |
+            {post.children} {post.children === 1 ? "comment" : "comments"} |
+            {moment(post.created).format('MMMM Do YYYY, h:mm a')} |
+            <a
+              href={`https://steemit.com${post.url}`}
+              target="_blank">
+              view post on steemit
+            </a>
+          <div>
             <a
               href={`https://steemit.com/@${post.author}`}
               target="_blank">
@@ -304,7 +342,7 @@ class App extends Component {
     this.loadingMessage = <div>
         {
           this.state.query
-            ? <span>Searching for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span></span>
+            ? <span>Searching for <span style={styles.bold}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span></span>
             : <span>Loading {this.state.type === "Created" ? "New" : this.state.type} posts</span>
         }
     </div>
@@ -316,24 +354,24 @@ class App extends Component {
     this.foundMessage = <div>{this.state.type === "Created" ? "New" : this.state.type} posts</div>;
     return this.state.query
       ? <div>
-          Couldn't find any <span style={{fontWeight: "bold"}}>
+          Couldn't find any <span style={styles.bold}>
             {this.state.type === "Created" ? " new " : this.state.type.toLowerCase()}
-          </span> posts tagged with <span style={{fontWeight: "bold"}}> {this.state.query}</span>
+          </span> posts tagged with <span style={styles.bold}> {this.state.query}</span>
         </div>
       : this.foundMessage
   }
 
   getFoundMessage(){
     this.foundMessage = <div>
-        Viewing results for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>
+        Viewing results for <span style={styles.bold}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>
       </div>
 
     return this.foundMessage;
   }
 
   renderPostList(){
-    return <div style={{width: "100%"}}>
-        <div style={{width: "100%",borderBottom: "1px solid lightgray", padding: 10, fontSize: 14}}>
+    return <div>
+        <div style={styles.searchStatusMessageContainer}>
           {
             (this.state.loading === true && Array.isArray(this.state.posts) && !this.state.posts.length)
               ? <div>

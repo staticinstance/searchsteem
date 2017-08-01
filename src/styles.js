@@ -1,6 +1,15 @@
 import loading from './assets/loading.gif';
 
 export default {
+  searchStatusMessageContainer: {
+    width: "100%",
+    borderBottom: "1px solid lightgray",
+    padding: 10,
+    fontSize: 14,
+  },
+  bold: {
+    fontWeight: "bold"
+  },
   postImage: {
     position: "absolute",
     top: 5,
@@ -95,6 +104,28 @@ export default {
     right: 0,
     overflow: "auto",
   },
+  metadataContainer: {
+    paddingTop: 10
+  },
+  nsfwMessage: {
+    fontWeight: "bold",
+    color: "#000000",
+    textDecoration: "none"
+  },
+  nsfwPostContainer:{
+    verticalAlign: 'top',
+  },
+  nsfwToggleContainer: {
+    paddingRight: 10
+  },
+  postInfo: {
+    verticalAlign: 'top'
+  },
+  postTitle: {
+    fontWeight: "bold",
+    color: "#000000",
+    textDecoration: "none",
+  },
   postTable: {
     padding: 10,
     paddingTop: 5,
@@ -102,7 +133,14 @@ export default {
     height: 100,
     width: "100%",
   },
-  postTableImage: {
+  postImageContainer: {
+    position: "relative",
+    height: 100,
+    maxWidth: 100,
+    width: 100,
+    overflow: "hidden",
+  },
+  nsfwDefaultImage: {
     position: "relative",
     height: 100,
     maxWidth: 100,
