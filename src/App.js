@@ -291,7 +291,12 @@ class App extends Component {
                   style={{...styles.button, ...this.state.query.split(" ").includes(tag)
                     ? styles.selectedButton
                     : {}}}
-                  onClick={() => this.setState({query: tag.toLowerCase()})} target="_blank">
+                  onClick={() => {
+                    this.setState({query: tag.toLowerCase()});
+                    this.searchInput.value = tag.toLowerCase();
+                    this.doSearch();
+                  }
+                  } target="_blank">
                         {tag}
                       </span>)
                     }
