@@ -371,8 +371,8 @@ class App extends Component {
     return <div style={styles.header}>
         <span>
           <img
-            alt='SearchSteem!'
-            title='SearchSteem!'
+            alt='WeSteem'
+            title='WeSteem'
             style={styles.logo}
             src={logo} />
         </span>
