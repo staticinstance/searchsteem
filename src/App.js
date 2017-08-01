@@ -335,6 +335,15 @@ class App extends Component {
 
     return this.foundMessage;
   }
+  getLoadingImage(){
+    return <div style={styles.loadingPanel}>
+             <img
+               src={logo}
+               style={styles.loadingImage}
+               className="spinner"
+               alt={this.getLoadingMessage()}/>
+           </div>
+  }
 
   renderPostList(){
     return <div>
@@ -343,9 +352,7 @@ class App extends Component {
             (this.state.loading === true && Array.isArray(this.state.posts) && !this.state.posts.length)
               ? <div>
                 {this.getLoadingMessage()}
-                <div style={styles.loadingPanel}>
-                  <img src={logo} style={styles.loadingImage} className="spinner" alt={this.getLoadingMessage()}/>
-                </div>
+                {this.getLoadingImage()}
               </div>
               : this.state.query && Array.isArray(this.state.posts) && this.state.posts.length
                 ? this.state.query === this.state.lastQuery
