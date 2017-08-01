@@ -90,6 +90,10 @@ export default {
   },
   searchInput: {
     width: 200,
+    fontFamily: "Arial, Helvetica, sans-serif",
+    fontSize: 15,
+    padding: 2,
+    borderRadius: 3,
   },
   loadingPanel: {
     backgroundImage: `url(${loading})`,
