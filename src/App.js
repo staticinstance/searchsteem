@@ -79,15 +79,12 @@ class App extends Component {
   }
 
   doSearch(){
-    if(this.searchTimeout){
-      clearTimeout(this.searchTimeout);
-    }
     this.setState({
       query: this.searchInput.value.toLowerCase(),
       loading: true,
       posts: []
     })
-    this.searchTimeout=setTimeout(() => this.searchSteemit(), 500);
+    this.searchSteemit();
   }
 
   componentDidUpdate(nextProps, nextState){
@@ -98,26 +95,7 @@ class App extends Component {
 
   componentDidMount(){
     this.searchInput.focus();
-    this.getTrendingPosts();
-  }
-
-  componentWillMount(){
-    this.searchSteemit();
-  }
-
-  getTrendingPosts(){
-    if(!this.state.loading){
-      this.setState({loading: true});
-    }
-    steem.api['getDiscussionsByTrending']({
-      tag: "",
-      limit: 100
-    }, (error, result) => {
-        if(!this.state.query){
-          this.setState({loading: false, posts: result});
-          this.forceUpdate()
-        }
-      })
+    this.doSearch();
   }
 
   searchSteemit(){
@@ -159,23 +137,16 @@ class App extends Component {
   }
 
   handleTypeChange(value){
-    if(!this.state.loading){
-      this.setState({loading: true});
-    }
     this.setState({
       type: value
     });
   }
 
   toggleNSFW(){
-    if(!this.state.loading){
-      this.setState({loading: true});
-    }
     this.setState({
       nsfw: !this.state.nsfw,
       shownNSFWPosts: this.state.nsfw ? {} : this.state.shownNSFWPosts
     });
-    this.forceUpdate();
   }
 
   renderVotersTitle(post){
@@ -291,14 +262,10 @@ class App extends Component {
           <span
             title={`$${post.pending_payout_value.replace(' SBD', '')} potential payout`}>
             ${post.pending_payout_value.replace('SBD', '')}
-          </span> |
-            <span style={{cursor: "pointer"}}
+          </span> | <span style={{cursor: "pointer"}}
               title={this.renderVotersTitle(post)}>
               {post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"}
-            </span> |
-            {post.children} {post.children === 1 ? "comment" : "comments"} |
-            {moment(post.created).format('MMMM Do YYYY, h:mm a')} |
-            <a
+            </span> | {post.children} {post.children === 1 ? "comment" : "comments"} | {moment(post.created).format('MMMM Do YYYY, h:mm a')} | <a
               href={`https://steemit.com${post.url}`}
               target="_blank">
               view post on steemit
