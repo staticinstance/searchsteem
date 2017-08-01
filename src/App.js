@@ -84,7 +84,7 @@ class App extends Component {
       clearTimeout(this.searchTimeout);
     }
     this.setState({
-      query: this.searchInput.value,
+      query: this.searchInput.value.toLowerCase(),
       loading: true,
       posts: []
     })
