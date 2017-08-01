@@ -7,6 +7,34 @@
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
     <style>
+      .splash {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          width: 100%;
+          background-image: url('steem.png');
+          background-repeat: no-repeat;
+          background-attachment: fixed;
+          background-position: center;
+          background-size: 100px;
+          -webkit-animation-name: spin;
+          -webkit-animation-duration: 4000ms;
+          -webkit-animation-iteration-count: infinite;
+          -webkit-animation-timing-function: linear;
+          -moz-animation-name: spin;
+          -moz-animation-duration: 4000ms;
+          -moz-animation-iteration-count: infinite;
+          -moz-animation-timing-function: linear;
+          -ms-animation-name: spin;
+          -ms-animation-duration: 4000ms;
+          -ms-animation-iteration-count: infinite;
+          -ms-animation-timing-function: linear;
+          animation-name: spin;
+          animation-duration: 4000ms;
+          animation-iteration-count: infinite;
+          animation-timing-function: linear;
+      }
       .spinner {
           -webkit-animation-name: spin;
           -webkit-animation-duration: 4000ms;
@@ -77,14 +105,9 @@
       You need to enable JavaScript to run this app.
     </noscript>
     <div id="root">
-      <div height="100%">
-      <img
-         style="vertical-align: middle; text-align: middle; position: relative; top: '50%'"
-         height="100px"
-         src="steem.png"
-         className="spinner"
-         alt="loading"/>
-      </div>
+      <div
+        class="splash"
+        alt="loading"/>
     </div>
   </body>
 </html>
