@@ -374,11 +374,9 @@ class App extends Component {
           <img alt='SearchSteem!' title='SearchSteem!' style={{height: 35, verticalAlign: "middle", paddingRight: 10}} src={logo} />
         </span>
         <span>
-            <input onKeyDown={(e) => this.handleSearchInputKeyDown(e)} ref={(input) => { this.searchInput = input; }} style={{width: 300}} type="text" placeholder="Search..." />
-          <span style={{position: "relative", left: -3}}>
-          {this.renderPostTypeButtons()}
-          {this.renderNSFWToggle()}
-        </span>
+            <input onKeyDown={(e) => this.handleSearchInputKeyDown(e)} ref={(input) => { this.searchInput = input; }} style={{width: 200}} type="text" placeholder="Search..." />
+            {this.renderPostTypeButtons()}
+            {this.renderNSFWToggle()}
         <span style={{color: "#FFFFFF", fontSize: 12, float: "right", paddingTop: 10, paddingRight: 20}}>
           created by <a
             style={{color: "#FFFFFF", textDecoration: "none"}}
