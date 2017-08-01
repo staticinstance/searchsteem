@@ -18,7 +18,8 @@ class App extends Component {
       posts: [],
       nsfw: false,
       loading: false,
-      shownNSFWPosts: {}
+      shownNSFWPosts: {},
+      lastQuery: '',
     };
   }
 
@@ -34,10 +35,10 @@ class App extends Component {
     }
 
     this.state.query.split(" ").forEach(tag => {
-      if(this.getTagsFromPost(a).includes(tag)){
+      if(this.getTagsFromPost(a) && this.getTagsFromPost(a).includes(tag)){
         totals.a++;
       }
-      if(this.getTagsFromPost(a).includes(tag)){
+      if(this.getTagsFromPost(b) && this.getTagsFromPost(b).includes(tag)){
         totals.b++;
       }
     });
@@ -78,17 +79,20 @@ class App extends Component {
     }
   }
 
+  doSearch(){
+    if(this.searchTimeout){
+      clearTimeout(this.searchTimeout);
+    }
+    this.setState({
+      loading: true,
+      posts: []
+    })
+    this.searchTimeout=setTimeout(() => this.searchSteemit(), 500);
+  }
+
   componentDidUpdate(nextProps, nextState){
-    if((!deepEqual(nextState.query, this.state.query) && nextState.query.replace(" ", "") !== this.state.query.replace(" ", ""))
-        || !deepEqual(nextState.type, this.state.type)){
-         if(this.searchTimeout){
-           clearTimeout(this.searchTimeout);
-         }
-         this.setState({
-           loading: true,
-           posts: []
-         })
-         this.searchTimeout=setTimeout(() => this.searchSteemit(), 500);
+    if(!deepEqual(nextState.type, this.state.type)){
+         this.doSearch();
     }
   }
 
@@ -144,7 +148,7 @@ class App extends Component {
 
               posts = posts.concat(result).sort((a,b) => this.sortPostsByTags(a,b));
               if(i === this.total - 1){
-                this.setState({loading: false, posts: posts});
+                this.setState({lastQuery: this.state.query, loading: false, posts: posts});
               }
           });
         }catch(e){
@@ -311,32 +315,34 @@ class App extends Component {
   }
 
   getLoadingMessage(){
-    return <div>
-      {
-        this.state.query
-          ? <span>Searching for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span></span>
-          : <span>Loading {this.state.type === "Created" ? "New" : this.state.type} posts</span>
-      }
-      <div style={{
-          backgroundImage: `url(${loading})`,
-          backgroundRepeat: "no-repeat",
-          backgroundAttachment: "fixed",
-          backgroundSize: 'contain',
-          width: "100%",
-          position: "absolute",
-          top: 93, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
-      </div>
-  </div>
+    this.loadingMessage = <div>
+        {
+          this.state.query
+            ? <span>Searching for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span></span>
+            : <span>Loading {this.state.type === "Created" ? "New" : this.state.type} posts</span>
+        }
+    </div>
+    return this.loadingMessage;
   }
 
   getNotFoundMessage(){
+    // this needs to be refactored to move found message into get Found message
+    this.foundMessage = <div>{this.state.type === "Created" ? "New" : this.state.type} posts</div>;
     return this.state.query
       ? <div>
           Couldn't find any <span style={{fontWeight: "bold"}}>
             {this.state.type === "Created" ? " new " : this.state.type.toLowerCase()}
           </span> posts tagged with <span style={{fontWeight: "bold"}}> {this.state.query}</span>
         </div>
-      : <div>{this.state.type === "Created" ? "New" : this.state.type} posts</div>
+      : this.foundMessage
+  }
+
+  getFoundMessage(){
+    this.foundMessage = <div>
+        Viewing results for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>
+      </div>
+
+    return this.foundMessage;
   }
 
   renderPostList(){
@@ -344,11 +350,22 @@ class App extends Component {
         <div style={{width: "100%",borderBottom: "1px solid lightgray", padding: 10, fontSize: 14}}>
           {
             (this.state.loading === true && Array.isArray(this.state.posts) && !this.state.posts.length)
-              ? this.getLoadingMessage()
+              ? <div>
+                {this.getLoadingMessage()}
+                <div style={{
+                  backgroundImage: `url(${loading})`,
+                  backgroundRepeat: "no-repeat",
+                  backgroundAttachment: "fixed",
+                  backgroundSize: 'contain',
+                  width: "100%",
+                  position: "absolute",
+                  top: 93, bottom: 0,left: 0, right: 0,overflow: "auto"}}>
+                </div>
+              </div>
               : this.state.query && Array.isArray(this.state.posts) && this.state.posts.length
-                ? <div>
-                    Viewing results for <span style={{fontWeight: "bold"}}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>
-                  </div>
+                ? this.state.query === this.state.lastQuery
+                  ? this.getFoundMessage()
+                  : this.foundMessage
                 : this.getNotFoundMessage()
           }
         </div>
@@ -364,7 +381,7 @@ class App extends Component {
           <img alt='SearchSteem!' title='SearchSteem!' style={{height: 35, verticalAlign: "middle", paddingRight: 10}} src={logo} />
         </span>
         <span>
-            <input ref={(input) => { this.searchInput = input; }} style={{width: 300}} onChange={(e)=>this.handleQueryChange(e.target.value)} type="text" value={this.state.query} placeholder="Search..." />
+            <input onKeyDown={(e) => this.handleSearchInputKeyDown(e)} ref={(input) => { this.searchInput = input; }} style={{width: 300}} onChange={(e)=>this.handleQueryChange(e.target.value)} type="text" value={this.state.query} placeholder="Search..." />
         <span style={{position: "relative", left: 10}}>
           {this.renderPostTypeButtons()}
           {this.renderNSFWToggle()}
@@ -379,6 +396,12 @@ class App extends Component {
         </span>
       </span>
     </div>
+  }
+
+  handleSearchInputKeyDown(e){
+    if (e.key === 'Enter') {
+      this.doSearch();
+    }
   }
 
   isTypeSelected(type){
