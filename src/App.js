@@ -84,6 +84,7 @@ class App extends Component {
       clearTimeout(this.searchTimeout);
     }
     this.setState({
+      query: this.searchInput.value,
       loading: true,
       posts: []
     })
@@ -176,19 +177,6 @@ class App extends Component {
       shownNSFWPosts: this.state.nsfw ? {} : this.state.shownNSFWPosts
     });
     this.forceUpdate();
-  }
-
-  handleQueryChange(value){
-    if(!this.lastQuery){
-      this.lastQuery = value;
-    }
-    if(!this.state.loading && !(/\s+$/.test(value)) && value !== this.lastQuery){
-      this.lastQuery = value;
-      this.setState({loading: true});
-    }
-    this.setState({
-      query: value.toLowerCase()
-    });
   }
 
   renderVotersTitle(post){
@@ -381,8 +369,8 @@ class App extends Component {
           <img alt='SearchSteem!' title='SearchSteem!' style={{height: 35, verticalAlign: "middle", paddingRight: 10}} src={logo} />
         </span>
         <span>
-            <input onKeyDown={(e) => this.handleSearchInputKeyDown(e)} ref={(input) => { this.searchInput = input; }} style={{width: 300}} onChange={(e)=>this.handleQueryChange(e.target.value)} type="text" value={this.state.query} placeholder="Search..." />
-        <span style={{position: "relative", left: 10}}>
+            <input onKeyDown={(e) => this.handleSearchInputKeyDown(e)} ref={(input) => { this.searchInput = input; }} style={{width: 300}} type="text" placeholder="Search..." />
+          <span style={{position: "relative", left: -3}}>
           {this.renderPostTypeButtons()}
           {this.renderNSFWToggle()}
         </span>
@@ -410,6 +398,8 @@ class App extends Component {
 
   renderPostTypeButtons(){
     return <span style={styles.typeButtons}>
+      <div style={{...styles.button, ...styles.selectedButton, ...styles.searchButton}}
+        onClick={()=>this.doSearch()}>Search</div>
       <div style={{...styles.button, ...this.isTypeSelected('Created')
         ? styles.selectedButton
         : {}}}

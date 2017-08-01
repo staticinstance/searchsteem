@@ -7,7 +7,7 @@ export default {
   },
   button: {
       cursor: 'pointer',
-      padding: 5,
+      padding: 6,
       fontSize: 10,
       color: '#1a5099',
       border: '1px solid #1a5099',
@@ -34,5 +34,9 @@ export default {
   tagButtons: {
     paddingTop: 5,
     paddingBottom: 8,
+  },
+  searchButton: {
+    marginRight: 20,
+    backgroundColor: '#4BA2F2',
   }
 }
