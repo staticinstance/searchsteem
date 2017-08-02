@@ -24,6 +24,19 @@ class App extends Component {
     };
   }
 
+  shouldComponentUpdate(nextProps, nextState){
+     if(!deepEqual(nextState.query, this.state.query) ||
+        !deepEqual(nextState.shownNSFWPosts, this.state.shownNSFWPosts) ||
+        !deepEqual(nextState.type, this.state.type) ||
+        !deepEqual(nextState.nsfw, this.state.nsfw) ||
+        !deepEqual(nextState.posts, this.state.posts) ||
+        !deepEqual(nextState.loading, this.state.loading)){
+       return true;
+     } else {
+       return false;
+     }
+   }
+
   getTagsFromPost(post){
     const metadata = JSON.parse(post.json_metadata);
     return metadata.tags;
@@ -68,14 +81,14 @@ class App extends Component {
   }
 
   getQueryDisplay(){
-    const query = this.searchInput ? this.searchInput.value.toLowerCase() : '';
+    const query = this.state.query.toLowerCase() || '';
 
     return this.state.type === "Blog" && query.charAt(0) !== '@' ? `@${query}` : query;
   }
 
   doSearch(){
     const query = this.state.type === "Blog"
-      ? this.searchInput.value.replace(/([^a-z])+/i, "")
+      ? this.searchInput.value.replace(" ", "").replace(/([^a-zA-Z])+/i, "")
       : this.searchInput.value
     this.setState({
       query: query,
@@ -143,7 +156,6 @@ class App extends Component {
       query: this.searchInput.value,
       type: value
     });
-    this.doSearch();
   }
 
   toggleNSFW(){
