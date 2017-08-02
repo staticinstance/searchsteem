@@ -5,6 +5,7 @@ import moment from 'moment';
 import steem from 'steem';
 import logo from './assets/steem.png';
 import defaultPhoto from './assets/no-photo.png';
+import refresh from './assets/refresh.png';
 import styles from './styles';
 
 class App extends Component {
@@ -318,7 +319,7 @@ class App extends Component {
 
   getNotFoundMessage(){
     // this needs to be refactored to move found message into get Found message
-    this.foundMessage = <div>{this.state.type === "Created" ? "New" : this.state.type} posts</div>;
+    this.foundMessage = <div>{this.state.type === "Created" ? "New" : this.state.type} posts <img title="Refresh" alt="Refresh" src={refresh} style={styles.refreshButton} onClick={() => this.doSearch()} /></div> ;
     return this.state.query
       ? <div>
           Couldn't find any <span style={styles.bold}>
@@ -330,13 +331,13 @@ class App extends Component {
 
   getFoundMessage(){
     this.foundMessage = <div>
-        Viewing results for <span style={styles.bold}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span>
+        Viewing results for <span style={styles.bold}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span> <img title="Refresh" alt="Refresh" src={refresh} style={styles.refreshButton} onClick={() => this.doSearch()} />
       </div>
 
     return this.foundMessage;
   }
   getLoadingImage(){
-    return <div style={styles.loadingPanel}>
+    return <div style={{...{height: window.screen.height / 2 - 72}, ...styles.loadingPanel}}>
              <img
                src={logo}
                style={styles.loadingImage}
@@ -346,7 +347,7 @@ class App extends Component {
   }
 
   renderPostList(){
-    return <div>
+    return <div style={{height: 1000}}>
         <div style={styles.searchStatusMessageContainer}>
           {
             (this.state.loading === true && Array.isArray(this.state.posts) && !this.state.posts.length)
@@ -372,7 +373,7 @@ class App extends Component {
         <span>
           <img
             alt='WeSteem'
-            title='WeSteem'
+            title='WeSteem '
             style={styles.logo}
             src={logo} />
         </span>

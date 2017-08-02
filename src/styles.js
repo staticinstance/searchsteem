@@ -96,7 +96,6 @@ export default {
   },
   loadingPanel: {
     width: "100%",
-    height: "60%",
     position: "absolute",
     top: 93,
     bottom: 0,
@@ -155,4 +154,8 @@ export default {
     width: 100,
     overflow: "hidden"
   },
+  refreshButton: {
+    height: 10,
+    cursor: 'pointer',
+  }
 }
