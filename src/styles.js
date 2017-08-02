@@ -105,6 +105,9 @@ export default {
     verticalAlign: "middle",
     textAlign: "center",
   },
+  resteemedImage: {
+    height: 10,
+  },
   loadingImage: {
     height: 100,
     width: 100,

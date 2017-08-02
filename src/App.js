@@ -6,6 +6,7 @@ import steem from 'steem';
 import logo from './assets/steem.png';
 import defaultPhoto from './assets/no-photo.png';
 import refresh from './assets/refresh.png';
+import resteemed from './assets/resteemed.png';
 import styles from './styles';
 
 class App extends Component {
@@ -227,6 +228,7 @@ class App extends Component {
                     </a>
                   </td>
                   <td style={styles.postInfo}>
+                    {this.getResteemed(post.author)}
                     <span style={styles.nsfwToggleContainer}>
                       {this.renderNSFWSingleToggle(post.id)}
                       {this.renderNSFWToggle()}
@@ -253,6 +255,7 @@ class App extends Component {
                   }
                 </td>
                 <td style={styles.nsfwPostContainer}>
+                  {this.getResteemed(post.author)}
                   {post.tags && post.tags.includes("nsfw")
                     ? <span style={styles.nsfwToggleContainer}>
                       {this.renderNSFWSingleToggle(post.id)}
@@ -271,6 +274,11 @@ class App extends Component {
               </tr>)}
             </tbody></table>)})
           }</div>);
+  }
+
+  getResteemed(author){
+    const { type, query } = this.state;
+    return type === 'Blog' && author !== query ? <div><img style={styles.resteemedImage} src={resteemed} alt="Resteemd" />Resteemed</div> : null
   }
 
   renderPostMetaData(post){
