@@ -88,7 +88,7 @@ export default {
     overflow: "hidden",
   },
   searchInput: {
-    width: 200,
+    width: 220,
     fontFamily: "Arial, Helvetica, sans-serif",
     fontSize: 15,
     padding: 2,

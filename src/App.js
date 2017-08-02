@@ -79,9 +79,18 @@ class App extends Component {
     }
   }
 
+  getQueryDisplay(){
+    const query = this.searchInput ? this.searchInput.value.toLowerCase() : '';
+
+    return this.state.type === "Blog" && query.charAt(0) !== '@' ? `@${query}` : query;
+  }
+
   doSearch(){
+    const query = this.state.type === "Blog"
+      ? this.searchInput.value.replace(/([^a-z])+/i, "")
+      : this.searchInput.value
     this.setState({
-      query: this.searchInput.value.toLowerCase(),
+      query: query,
       loading: true,
       posts: []
     })
@@ -100,18 +109,18 @@ class App extends Component {
   }
 
   searchSteemit(){
+    const { type, query } = this.state;
     let posts = [];
-    this.total = this.state.query.trim().split(" ").length;
-    this.state.query.trim().split(" ").forEach((query, i) => {
+    this.total = query.trim().split(" ").length;
+    query.trim().split(" ").forEach((query, i) => {
       if(query !== " "){
         try{
-          steem.api[`getDiscussionsBy${this.state.type}`]({
+          steem.api[`getDiscussionsBy${type}`]({
             tag: query,
             limit: 100
           }, (error, result) => {
               //dedupe
               if(error || !result || !result.reduce){
-                console.log(error)
                 this.setState({loading: false, posts: []});
                 return;
               }
@@ -125,9 +134,13 @@ class App extends Component {
                 return deduped;
               }, []);
 
-              posts = posts.concat(result).sort((a,b) => this.sortPostsByTags(a,b));
+              posts = posts.concat(result);
+              posts = type === "Blog"
+                ? posts = posts.sort((a,b) => this.sortPostsByDate(a,b))
+                : posts = posts.sort((a,b) => this.sortPostsByTags(a,b))
+
               if(i === this.total - 1){
-                this.setState({lastQuery: this.state.query, loading: false, posts: posts});
+                this.setState({lastQuery: query, loading: false, posts: posts});
               }
           });
         }catch(e){
@@ -139,8 +152,10 @@ class App extends Component {
 
   handleTypeChange(value){
     this.setState({
+      query: this.searchInput.value,
       type: value
     });
+    this.doSearch();
   }
 
   toggleNSFW(){
@@ -306,36 +321,63 @@ class App extends Component {
     </div>
   }
 
+  getUserLoadingMessage(){
+    return <span>Searching for the latest posts by {this.getQueryDisplay()}</span>
+  }
+
+  getNonUserLoadingMessage(){
+    return <span>Searching for <span style={styles.bold}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.getQueryDisplay()}</span></span>
+  }
+
   getLoadingMessage(){
     this.loadingMessage = <div>
         {
-          this.state.query
-            ? <span>Searching for <span style={styles.bold}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span></span>
-            : <span>Loading {this.state.type === "Created" ? "New" : this.state.type} posts</span>
+          this.state.query || this.state.type === 'Blog'
+            ? this.state.type === 'Blog'
+              ? this.getUserLoadingMessage()
+              : this.getNonUserLoadingMessage()
+            : <span>Loading {this.getTypeDisplay()} posts</span>
         }
     </div>
     return this.loadingMessage;
   }
 
-  getNotFoundMessage(){
+  getNotFoundMessageDisplay(){
     // this needs to be refactored to move found message into get Found message
-    this.foundMessage = <div>{this.state.type === "Created" ? "New" : this.state.type} posts <img title="Refresh" alt="Refresh" src={refresh} style={styles.refreshButton} onClick={() => this.doSearch()} /></div> ;
+    this.foundMessage = <div>{this.getTypeDisplay()} posts {this.getRefreshImage()}</div>;
     return this.state.query
-      ? <div>
-          Couldn't find any <span style={styles.bold}>
-            {this.state.type === "Created" ? " new " : this.state.type.toLowerCase()}
-          </span> posts tagged with <span style={styles.bold}> {this.state.query}</span>
-        </div>
+      ? this.getNotFoundMessage()
       : this.foundMessage
   }
 
+  getTypeDisplay(){
+    return this.state.type === "Created" ? "New" : this.state.type
+  }
+
+  getRefreshImage(){
+    return <img title="Refresh" alt="Refresh" src={refresh} style={styles.refreshButton} onClick={() => this.doSearch()} />
+  }
+
+  getNotFoundMessage(){
+    return this.state.type === 'Blog'
+      ? <div>Couldn't find any posts by {this.getQueryDisplay()} {this.getRefreshImage()}</div>
+      : <div>
+          Couldn't find any <span style={styles.bold}>
+            {this.state.type === "Created" ? " new " : this.state.type.toLowerCase()}
+          </span> posts tagged with <span style={styles.bold}> {this.getQueryDisplay()}</span> {this.getRefreshImage()}
+        </div>
+  }
+
   getFoundMessage(){
-    this.foundMessage = <div>
-        Viewing results for <span style={styles.bold}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.state.query}</span> <img title="Refresh" alt="Refresh" src={refresh} style={styles.refreshButton} onClick={() => this.doSearch()} />
-      </div>
+    this.foundMessage = this.state.type === 'Blog'
+      ? <div>Viewing the latest posts by {this.getQueryDisplay()} {this.getRefreshImage()}</div>
+      : <div>
+          Viewing results for <span style={styles.bold}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.getQueryDisplay()}</span> {this.getRefreshImage()}
+        </div>
 
     return this.foundMessage;
   }
+
   getLoadingImage(){
     return <div style={{...{height: window.screen.height / 2 - 72}, ...styles.loadingPanel}}>
              <img
@@ -359,7 +401,7 @@ class App extends Component {
                 ? this.state.query === this.state.lastQuery
                   ? this.getFoundMessage()
                   : this.foundMessage
-                : this.getNotFoundMessage()
+                : this.getNotFoundMessageDisplay()
           }
         </div>
         <div style={styles.postContainer}>
@@ -408,23 +450,41 @@ class App extends Component {
     return this.state.type === type;
   }
 
+  getTypeButtonTitle(buttonName){
+    const { query } = this.state;
+
+    if(buttonName === 'User'){
+      return `Show the latest posts by ${this.getQueryDisplay()}`
+    } else if(!query){
+      return `Show ${buttonName.toLowerCase()} posts`
+    } else {
+      return `Show ${buttonName.toLowerCase()} posts tagged with ${this.getQueryDisplay()}`
+    }
+  }
+
   renderPostTypeButtons(){
     return <span style={styles.typeButtons}>
-      <div style={{...styles.button, ...styles.selectedButton, ...styles.searchButton}}
+      <div title="Search" style={{...styles.button, ...styles.selectedButton, ...styles.searchButton}}
         onClick={()=>this.doSearch()}>Search</div>
-      <div style={{...styles.button, ...this.isTypeSelected('Created')
+      <div title={this.getTypeButtonTitle("User")} style={{...styles.button, ...this.isTypeSelected('Blog')
+        ? styles.selectedButton
+        : {}}}
+        onClick={()=> !this.searchInput.value
+          ? alert("Please enter a username")
+          : this.handleTypeChange("Blog")}>User</div>
+      <div title={this.getTypeButtonTitle("New")} style={{...styles.button, ...this.isTypeSelected('Created')
         ? styles.selectedButton
         : {}}}
         onClick={()=>this.handleTypeChange("Created")}>New</div>
-      <div style={{...styles.button, ...this.isTypeSelected('Hot')
+      <div title={this.getTypeButtonTitle("Hot")} style={{...styles.button, ...this.isTypeSelected('Hot')
         ? styles.selectedButton
         : {}}}
         onClick={()=>this.handleTypeChange("Hot")}>Hot</div>
-      <div style={{...styles.button, ...this.isTypeSelected('Trending')
+      <div  title={this.getTypeButtonTitle("Trending")} style={{...styles.button, ...this.isTypeSelected('Trending')
         ? styles.selectedButton
         : {}}}
         onClick={()=>this.handleTypeChange("Trending")}>Trending</div>
-      <div style={{...styles.button, ...this.isTypeSelected('Promoted')
+      <div title={this.getTypeButtonTitle("Promoted")} style={{...styles.button, ...this.isTypeSelected('Promoted')
         ? styles.selectedButton
         : {}}}
         onClick={()=>this.handleTypeChange("Promoted")}>Promoted</div>
