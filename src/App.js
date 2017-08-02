@@ -67,19 +67,6 @@ class App extends Component {
     return 0;
   }
 
-  shouldComponentUpdate(nextProps, nextState){
-    if(!deepEqual(nextState.query, this.state.query) ||
-       !deepEqual(nextState.shownNSFWPosts, this.state.shownNSFWPosts) ||
-       !deepEqual(nextState.type, this.state.type) ||
-       !deepEqual(nextState.nsfw, this.state.nsfw) ||
-       !deepEqual(nextState.posts, this.state.posts) ||
-       !deepEqual(nextState.loading, this.state.loading)){
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   getQueryDisplay(){
     const query = this.searchInput ? this.searchInput.value.toLowerCase() : '';
 
@@ -118,7 +105,7 @@ class App extends Component {
         try{
           steem.api[`getDiscussionsBy${type}`]({
             tag: query,
-            limit: 100
+            limit: 20
           }, (error, result) => {
               //dedupe
               if(error || !result || !result.reduce){
@@ -397,7 +384,7 @@ class App extends Component {
   }
 
   renderPostList(){
-    return <div style={{height: 1000}}>
+    return <div>
         <div style={styles.searchStatusMessageContainer}>
           {
             (this.state.loading === true && Array.isArray(this.state.posts) && !this.state.posts.length)
