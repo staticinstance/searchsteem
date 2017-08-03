@@ -71,7 +71,7 @@ class App extends Component {
   getQueryDisplay(){
     const query = this.searchInput ? this.searchInput.value : '';
 
-    return this.state.type === "Blog" && query.charAt(0) !== '@' ? <span style={styles.bold}>@{query.replace(' ', '').trim()}</span> : query.trim();
+    return this.state.type === "Blog" && query.charAt(0) !== '@' ? <span style={styles.bold}>@{query.toLowerCase().replace(' ', '').trim()}</span> : query.trim();
   }
 
   doSearch(){
@@ -101,62 +101,69 @@ class App extends Component {
     const { type } = this.state;
     const originalQuery = this.searchInput.value;
     const query = type === 'Blog'
-      ? this.searchInput.value.replace(' ', '').trim()
-      : this.searchInput.value.trim()
+      ? this.searchInput.value.toLowerCase().replace(' ', '').trim()
+      : this.searchInput.value.toLowerCase().trim()
 
     const queryArray = query.split(" ")
+
     //add all as one tag in case it's a username
-    queryArray.push(this.searchInput.value.replace(' ', '').trim())
+    if(type !== 'Blog'){
+      queryArray.push(this.searchInput.value.replace(' ', '').trim())
+    }
 
     this.searchInput.value = "Searching...";
     let posts = [];
     const total = queryArray.length;
     total
-    ? queryArray.forEach((q, i) => {
-        if(q !== " "){
-          try{
-            steem.api[`getDiscussionsBy${type}`]({
-              tag: q,
-              limit: 20
-            }, (error, result) => {
-                //dedupe
-                if(error || !result || !result.reduce){
-                  this.setState({loading: false, posts: []});
-                  return;
-                }
-                result = result.reduce((deduped, item) => {
-                  const notFound = posts.filter(r => {
-                    return r.id === item.id
-                  }).length === 0
-                  if(notFound){
-                    deduped.push(item)
+      ? queryArray.forEach((q, i) => {
+          if(q !== " "){
+            try{
+              steem.api[`getDiscussionsBy${type}`]({
+                tag: q,
+                limit: 20
+              }, (error, result) => {
+                  //dedupe
+                  if(error || !result || !result.reduce){
+                    this.searchInput.value = originalQuery;
+                    this.searchInput.focus();
+                    this.setState({loading: false, posts: []});
+                    return;
                   }
-                  return deduped;
-                }, []);
+                  result = result.reduce((deduped, item) => {
+                    const notFound = posts.filter(r => {
+                      return r.id === item.id
+                    }).length === 0
+                    if(notFound){
+                      deduped.push(item)
+                    }
+                    return deduped;
+                  }, []);
 
-                posts = posts.concat(result);
-                posts = type === "Blog"
-                  ? posts = posts.sort((a,b) => this.sortPostsByDate(a,b))
-                  : posts = posts.sort((a,b) => this.sortPostsByTags(a,b))
+                  posts = posts.concat(result);
+                  posts = type === "Blog"
+                    ? posts = posts.sort((a,b) => this.sortPostsByDate(a,b))
+                    : posts = posts.sort((a,b) => this.sortPostsByTags(a,b))
 
-                if(i === total - 1){
-                  this.searchInput.value = originalQuery;
-                  this.setState({lastQuery: q, loading: false, posts: posts});
-                  this.forceUpdate();
-                  this.canSearch = true;
-                  this.searchInput.focus();
-                }
-            })
-          }catch(e){
-            this.setState({loading: false, posts: []});
+                  if(i === total - 1){
+                    this.searchInput.value = originalQuery;
+                    this.setState({lastQuery: q, loading: false, posts: posts});
+                    this.forceUpdate();
+                    this.canSearch = true;
+                    this.searchInput.focus();
+                  }
+              })
+            }catch(e){
+              this.searchInput.value = originalQuery;
+              this.searchInput.focus();
+              this.setState({loading: false, posts: []});
+            }
           }
-        }
-      })
-    : (() => {
-          this.searchInput.value = originalQuery;
-          this.searchInput.focus();
-        }
-      )()
+        })
+      : (() => {
+            this.searchInput.value = originalQuery;
+            this.searchInput.focus();
+          }
+        )()
   }
 
   handleTypeChange(value){
@@ -319,8 +326,8 @@ class App extends Component {
               post.tags && post.tags[0]
                 ? <div style={styles.tagButtons}>{ post.tags.map(tag => <span
                   key={tag}
-                  style={{...styles.button, ...this.searchInput.value.split(" ").includes(tag)
-                    || [this.searchInput.value.replace(' ', '').trim()].includes(tag)
+                  style={{...styles.button, ...this.searchInput.value.toLowerCase().split(" ").includes(tag)
+                    || [this.searchInput.value.toLowerCase().replace(' ', '').trim()].includes(tag)
                       ? styles.selectedButton
                       : {}}}
                   onClick={() => {
