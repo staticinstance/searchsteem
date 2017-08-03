@@ -104,8 +104,11 @@ class App extends Component {
       ? this.searchInput.value.replace(' ', '').trim()
       : this.searchInput.value.trim()
 
-    this.searchInput.value = "Searching...";
     const queryArray = query.split(" ")
+    //add all as one tag in case it's a username
+    queryArray.push(this.searchInput.value.replace(' ', '').trim())
+
+    this.searchInput.value = "Searching...";
     let posts = [];
     const total = queryArray.length;
     total
@@ -317,8 +320,9 @@ class App extends Component {
                 ? <div style={styles.tagButtons}>{ post.tags.map(tag => <span
                   key={tag}
                   style={{...styles.button, ...this.searchInput.value.split(" ").includes(tag)
-                    ? styles.selectedButton
-                    : {}}}
+                    || [this.searchInput.value.replace(' ', '').trim()].includes(tag)
+                      ? styles.selectedButton
+                      : {}}}
                   onClick={() => {
                     this.setState({query: tag.toLowerCase()});
                     this.searchInput.value = tag.toLowerCase();
