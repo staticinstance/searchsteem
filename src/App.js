@@ -114,56 +114,46 @@ class App extends Component {
     this.searchInput.value = "Searching...";
     let posts = [];
     const total = queryArray.length;
-    total
-      ? queryArray.forEach((q, i) => {
-          if(q !== " "){
-            try{
-              steem.api[`getDiscussionsBy${type}`]({
-                tag: q,
-                limit: 20
-              }, (error, result) => {
-                  //dedupe
-                  if(error || !result || !result.reduce){
-                    this.searchInput.value = originalQuery;
-                    this.searchInput.focus();
-                    this.setState({loading: false, posts: []});
-                    return;
-                  }
-                  result = result.reduce((deduped, item) => {
-                    const notFound = posts.filter(r => {
-                      return r.id === item.id
-                    }).length === 0
-                    if(notFound){
-                      deduped.push(item)
-                    }
-                    return deduped;
-                  }, []);
+      queryArray.every((q, i) => {
+            steem.api[`getDiscussionsBy${type}`]({
+              tag: q,
+              limit: 20
+            }, (error, result) => {
+                if(error || !result || !result.reduce){
+                  this.searchInput.value = originalQuery;
+                  this.setState({lastQuery: q, loading: false, posts: []});
+                  this.forceUpdate();
+                  this.canSearch = true;
+                  this.searchInput.focus();
+                  return false;
+                }
 
-                  posts = posts.concat(result);
-                  posts = type === "Blog"
-                    ? posts = posts.sort((a,b) => this.sortPostsByDate(a,b))
-                    : posts = posts.sort((a,b) => this.sortPostsByTags(a,b))
-
-                  if(i === total - 1){
-                    this.searchInput.value = originalQuery;
-                    this.setState({lastQuery: q, loading: false, posts: posts});
-                    this.forceUpdate();
-                    this.canSearch = true;
-                    this.searchInput.focus();
+                //dedupe
+                result = result.reduce((deduped, item) => {
+                  const notFound = posts.filter(r => {
+                    return r.id === item.id
+                  }).length === 0
+                  if(notFound){
+                    deduped.push(item)
                   }
+                  return deduped;
+                }, []);
+
+                posts = posts.concat(result);
+                posts = type === "Blog"
+                  ? posts = posts.sort((a,b) => this.sortPostsByDate(a,b))
+                  : posts = posts.sort((a,b) => this.sortPostsByTags(a,b))
+
+                if(i === total - 1){
+                  this.searchInput.value = originalQuery;
+                  this.setState({lastQuery: q, loading: false, posts: posts});
+                  this.forceUpdate();
+                  this.canSearch = true;
+                  this.searchInput.focus();
+                }
               })
-            }catch(e){
-              this.searchInput.value = originalQuery;
-              this.searchInput.focus();
-              this.setState({loading: false, posts: []});
-            }
-          }
-        })
-      : (() => {
-            this.searchInput.value = originalQuery;
-            this.searchInput.focus();
-          }
-        )()
+        return true;
+      })
   }
 
   handleTypeChange(value){
@@ -300,6 +290,7 @@ class App extends Component {
   renderPostMetaData(post){
     return <div>
           <span
+            style={styles.bold}
             title={`$${post.pending_payout_value.replace(' SBD', '')} potential payout`}>
             ${post.pending_payout_value.replace('SBD', '')}
           </span> | <span style={{cursor: "pointer"}}
@@ -357,7 +348,7 @@ class App extends Component {
   getLoadingMessage(){
     this.loadingMessage = <div>
         {
-          this.state.query || this.state.type === 'Blog'
+          this.state.query.split(' ').join('') || this.state.type === 'Blog'
             ? this.state.type === 'Blog'
               ? this.getUserLoadingMessage()
               : this.getNonUserLoadingMessage()
@@ -368,9 +359,7 @@ class App extends Component {
   }
 
   getNotFoundMessageDisplay(){
-    return this.state.query
-      ? this.getNotFoundMessage()
-      : this.foundMessage
+    return this.getNotFoundMessage()
   }
 
   getTypeDisplay(){
@@ -392,7 +381,7 @@ class App extends Component {
   }
 
   getFoundMessage(){
-    if(this.searchInput && this.searchInput.value.replace(' ', '') === ''){
+    if(this.searchInput && this.searchInput.value.split(' ').join('') === ''){
       return <div>{this.getTypeDisplay()} posts {this.getRefreshImage()}</div>;
     }
 
@@ -493,7 +482,7 @@ class App extends Component {
       <div title={this.getTypeButtonTitle("User")} style={{...styles.button, ...this.isTypeSelected('Blog')
         ? styles.selectedButton
         : {}}}
-        onClick={()=> !this.searchInput.value
+        onClick={()=> !this.searchInput.value.trim()
           ? alert("Please enter a username")
           : this.handleTypeChange("Blog")}>User</div>
       <div title={this.getTypeButtonTitle("New")} style={{...styles.button, ...this.isTypeSelected('Created')
