@@ -296,8 +296,7 @@ class App extends Component {
   }
 
   renderPostMetaData(post){
-    console.log(post)
-    const isPaid = moment().isBefore(moment.utc(post.last_payout).local());
+    const isPaid = !post.abs_rshares;
     const payout = isPaid ? post.total_payout_value : post.pending_payout_value;
     return <div>
           <span
