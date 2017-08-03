@@ -101,7 +101,7 @@ class App extends Component {
     const { type } = this.state;
     const originalQuery = this.searchInput.value;
     const query = type === 'Blog'
-      ? this.searchInput.value.toLowerCase().replace(' ', '').trim()
+      ? this.searchInput.value.toLowerCase().split(' ').join('')
       : this.searchInput.value.toLowerCase().trim()
 
     const queryArray = query.split(" ")
