@@ -28,7 +28,7 @@ class App extends Component {
   getMetadata(post){
     let metadata = {};
     try{
-      metadata = JSON.parse(post.json_metadata || {});
+      metadata = JSON.parse(post.json_metadata) || {};
     }catch(e){}
     return metadata;
   }
@@ -225,7 +225,7 @@ class App extends Component {
       {posts.map((post, i) => {
       const metadata = this.getMetadata(post);
       const image = metadata.image;
-      post.tags = this.getTagsFromPost();
+      post.tags = this.getTagsFromPost(post);
       return  (
         <table key={i} style={{...{borderBottom: i!==posts.length - 1 ? "1px solid lightgray" : "none"},...styles.postTable}}>
           <tbody>
