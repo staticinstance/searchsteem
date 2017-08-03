@@ -108,47 +108,52 @@ class App extends Component {
     const queryArray = query.split(" ")
     let posts = [];
     const total = queryArray.length;
-
-    queryArray.forEach((q, i) => {
-      if(q !== " "){
-        try{
-          steem.api[`getDiscussionsBy${type}`]({
-            tag: q,
-            limit: 20
-          }, (error, result) => {
-              //dedupe
-              if(error || !result || !result.reduce){
-                this.setState({loading: false, posts: []});
-                return;
-              }
-              result = result.reduce((deduped, item) => {
-                const notFound = posts.filter(r => {
-                  return r.id === item.id
-                }).length === 0
-                if(notFound){
-                  deduped.push(item)
+    total
+    ? queryArray.forEach((q, i) => {
+        if(q !== " "){
+          try{
+            steem.api[`getDiscussionsBy${type}`]({
+              tag: q,
+              limit: 20
+            }, (error, result) => {
+                //dedupe
+                if(error || !result || !result.reduce){
+                  this.setState({loading: false, posts: []});
+                  return;
                 }
-                return deduped;
-              }, []);
+                result = result.reduce((deduped, item) => {
+                  const notFound = posts.filter(r => {
+                    return r.id === item.id
+                  }).length === 0
+                  if(notFound){
+                    deduped.push(item)
+                  }
+                  return deduped;
+                }, []);
 
-              posts = posts.concat(result);
-              posts = type === "Blog"
-                ? posts = posts.sort((a,b) => this.sortPostsByDate(a,b))
-                : posts = posts.sort((a,b) => this.sortPostsByTags(a,b))
+                posts = posts.concat(result);
+                posts = type === "Blog"
+                  ? posts = posts.sort((a,b) => this.sortPostsByDate(a,b))
+                  : posts = posts.sort((a,b) => this.sortPostsByTags(a,b))
 
-              if(i === total - 1){
-                this.searchInput.value = originalQuery;
-                this.setState({lastQuery: q, loading: false, posts: posts});
-                this.forceUpdate();
-                this.canSearch = true;
-                this.searchInput.focus();
-              }
-          });
-        }catch(e){
-          this.setState({loading: false, posts: []});
+                if(i === total - 1){
+                  this.searchInput.value = originalQuery;
+                  this.setState({lastQuery: q, loading: false, posts: posts});
+                  this.forceUpdate();
+                  this.canSearch = true;
+                  this.searchInput.focus();
+                }
+            })
+          }catch(e){
+            this.setState({loading: false, posts: []});
+          }
         }
-      }
-    })
+      })
+    : (() => {
+          this.searchInput.value = originalQuery;
+          this.searchInput.focus();
+        }
+      )()
   }
 
   handleTypeChange(value){
