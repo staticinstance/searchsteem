@@ -9,10 +9,8 @@ export default {
     fontWeight: "bold"
   },
   postImage: {
-    position: "absolute",
-    top: 5,
-    maxHeight: 80,
-    width: 90,
+    maxHeight: '100%',
+    maxWidth: '100%',
   },
   button: {
       cursor: 'pointer',
@@ -42,7 +40,6 @@ export default {
   },
   tagButtons: {
     paddingTop: 5,
-    paddingBottom: 8,
   },
   searchButton: {
     marginRight: 20,
@@ -109,7 +106,6 @@ export default {
     height: 10,
   },
   loadingImage: {
-    height: 100,
     width: 100,
     position: "relative",
     top: "50%",
@@ -129,7 +125,7 @@ export default {
     paddingRight: 10
   },
   postInfo: {
-    verticalAlign: 'top'
+    verticalAlign: 'bottom'
   },
   postTitle: {
     fontWeight: "bold",
@@ -138,21 +134,17 @@ export default {
   },
   postTable: {
     padding: 10,
-    paddingTop: 5,
-    paddingBottom: 0,
-    height: 100,
     width: "100%",
   },
   postImageContainer: {
-    position: "relative",
-    height: 100,
-    maxWidth: 100,
+    paddingRight: 10,
     width: 100,
-    overflow: "hidden",
+    height: 100,
+    verticalAlign: 'top',
+    textAlign: 'center',
   },
   nsfwDefaultImage: {
     position: "relative",
-    height: 100,
     maxWidth: 100,
     width: 100,
     overflow: "hidden"
