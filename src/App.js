@@ -1,6 +1,5 @@
 /* global window */
 import React, { Component } from 'react';
-import deepEqual from 'deep-equal';
 import moment from 'moment';
 import steem from 'steem';
 import logo from './assets/steem.png';
@@ -24,18 +23,7 @@ class App extends Component {
     };
   }
 
-  shouldComponentUpdate(nextProps, nextState){
-     if(!deepEqual(nextState.query, this.state.query) ||
-        !deepEqual(nextState.shownNSFWPosts, this.state.shownNSFWPosts) ||
-        !deepEqual(nextState.type, this.state.type) ||
-        !deepEqual(nextState.nsfw, this.state.nsfw) ||
-        !deepEqual(nextState.posts, this.state.posts) ||
-        !deepEqual(nextState.loading, this.state.loading)){
-       return true;
-     } else {
-       return false;
-     }
-   }
+  canSearch = true;
 
   getTagsFromPost(post){
     const metadata = JSON.parse(post.json_metadata);
@@ -81,7 +69,7 @@ class App extends Component {
   }
 
   getQueryDisplay(){
-    const query = this.state.query.toLowerCase() || '';
+    const query = this.searchInput ? this.searchInput.value.trim() : '';
 
     return this.state.type === "Blog" && query.charAt(0) !== '@' ? `@${query}` : query;
   }
@@ -94,14 +82,7 @@ class App extends Component {
       query: query,
       loading: true,
       posts: []
-    })
-    this.searchSteemit();
-  }
-
-  componentDidUpdate(nextProps, nextState){
-    if(!deepEqual(nextState.type, this.state.type)){
-         this.doSearch();
-    }
+    });
   }
 
   componentDidMount(){
@@ -109,15 +90,24 @@ class App extends Component {
     this.doSearch();
   }
 
+  componentDidUpdate(){
+    if(this.canSearch){
+      this.searchSteemit();
+      this.canSearch = false;
+    }
+  }
+
   searchSteemit(){
-    const { type, query } = this.state;
+    const { type } = this.state;
+    const query = this.searchInput.value.trim();
+    const queryArray = query.split(" ")
     let posts = [];
-    this.total = query.trim().split(" ").length;
-    query.trim().split(" ").forEach((query, i) => {
-      if(query !== " "){
+    const total = queryArray.length;
+    queryArray.forEach((q, i) => {
+      if(q !== " "){
         try{
           steem.api[`getDiscussionsBy${type}`]({
-            tag: query,
+            tag: q,
             limit: 20
           }, (error, result) => {
               //dedupe
@@ -140,8 +130,10 @@ class App extends Component {
                 ? posts = posts.sort((a,b) => this.sortPostsByDate(a,b))
                 : posts = posts.sort((a,b) => this.sortPostsByTags(a,b))
 
-              if(i === this.total - 1){
-                this.setState({lastQuery: query, loading: false, posts: posts});
+              if(i === total - 1){
+                this.setState({lastQuery: q, loading: false, posts: posts});
+                this.forceUpdate();
+                this.canSearch = true;
               }
           });
         }catch(e){
@@ -156,6 +148,7 @@ class App extends Component {
       query: this.searchInput.value,
       type: value
     });
+    this.doSearch();
   }
 
   toggleNSFW(){
@@ -276,7 +269,8 @@ class App extends Component {
   }
 
   getResteemed(author){
-    const { type, query } = this.state;
+    const { type } = this.state;
+    const query = this.searchInput ? this.searchInput.value.trim() : '';
     return type === 'Blog' && author !== query ? <div><img style={styles.resteemedImage} src={resteemed} alt="Resteemd" />Resteemed</div> : null
   }
 
