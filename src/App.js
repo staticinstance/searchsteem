@@ -296,11 +296,14 @@ class App extends Component {
   }
 
   renderPostMetaData(post){
+    console.log(post)
+    const isPaid = moment().isBefore(moment.utc(post.last_payout).local());
+    const payout = isPaid ? post.total_payout_value : post.pending_payout_value;
     return <div>
           <span
             style={styles.bold}
-            title={`$${post.pending_payout_value.replace(' SBD', '')} potential payout`}>
-            ${post.pending_payout_value.replace('SBD', '')}
+            title={`$${payout.replace(' SBD', '')} ${isPaid ? ' paid' : ' potential payout'}`}>
+            ${payout.replace('SBD', '')}
           </span> | <span style={{cursor: "pointer"}}
               title={this.renderVotersTitle(post)}>
               {post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"}
