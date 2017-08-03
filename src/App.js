@@ -26,7 +26,10 @@ class App extends Component {
   canSearch = true;
 
   getTagsFromPost(post){
-    const metadata = JSON.parse(post.json_metadata || {});
+    const metadata = {};
+    try{
+      metadata = JSON.parse(post.json_metadata || {});
+    }catch(e){}
     return metadata.tags || [];
   }
 
