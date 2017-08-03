@@ -149,6 +149,7 @@ class App extends Component {
                   this.setState({lastQuery: q, loading: false, posts: posts});
                   this.forceUpdate();
                   this.canSearch = true;
+                  this.searchInput.blur();
                 }
               })
         return true;
