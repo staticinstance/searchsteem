@@ -138,8 +138,8 @@ export default {
   },
   postImageContainer: {
     paddingRight: 10,
-    width: 100,
-    height: 100,
+    width: 95,
+    height: 95,
     verticalAlign: 'top',
     textAlign: 'center',
   },
