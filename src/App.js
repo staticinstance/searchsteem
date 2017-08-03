@@ -25,12 +25,17 @@ class App extends Component {
 
   canSearch = true;
 
-  getTagsFromPost(post){
+  getMetadata(post){
     let metadata = {};
     try{
       metadata = JSON.parse(post.json_metadata || {});
     }catch(e){}
-    return metadata.tags || [];
+    return metadata;
+  }
+
+  getTagsFromPost(post){
+    const tags = this.getMetadata(post).tags;
+    return tags || [];
   }
 
   sortPostsByTags(a,b){
@@ -218,9 +223,9 @@ class App extends Component {
     return (
       <div style={styles.postsContainer}>
       {posts.map((post, i) => {
-      const metadata = JSON.parse(post.json_metadata);
+      const metadata = this.getMetadata(post);
       const image = metadata.image;
-      post.tags = metadata.tags;
+      post.tags = this.getTagsFromPost();
       return  (
         <table key={i} style={{...{borderBottom: i!==posts.length - 1 ? "1px solid lightgray" : "none"},...styles.postTable}}>
           <tbody>
