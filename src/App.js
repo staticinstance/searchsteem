@@ -283,7 +283,7 @@ class App extends Component {
 
   getResteemed(author){
     const { type } = this.state;
-    const query = this.searchInput ? this.searchInput.value.trim() : '';
+    const query = this.searchInput ? this.searchInput.value.trim().replace(' ', '') : '';
     return type === 'Blog' && author !== query ? <div><img style={styles.resteemedImage} src={resteemed} alt="Resteemd" />Resteemed</div> : null
   }
 
