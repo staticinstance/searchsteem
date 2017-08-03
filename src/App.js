@@ -296,7 +296,7 @@ class App extends Component {
           </span> | <span style={{cursor: "pointer"}}
               title={this.renderVotersTitle(post)}>
               {post.active_votes.length} {post.active_votes.length === 1 ? "vote" : "votes"}
-            </span> | {post.children} {post.children === 1 ? "comment" : "comments"} | {moment(post.created).format('MMMM Do YYYY, h:mm a')} | <a
+            </span> | {post.children} {post.children === 1 ? "comment" : "comments"} | {moment.utc(post.created).local().format('MMMM Do YYYY, h:mm a')} | <a
               href={`https://steemit.com${post.url}`}
               target="_blank">
               view post on steemit
