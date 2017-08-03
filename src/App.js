@@ -293,8 +293,8 @@ class App extends Component {
 
   getResteemed(author){
     const { type } = this.state;
-    const query = this.searchInput ? this.searchInput.value.trim().replace(' ', '') : '';
-    return type === 'Blog' && author.toLowerCase() !== query.toLowerCase() ? <div><img style={styles.resteemedImage} src={resteemed} alt="Resteemd" />Resteemed</div> : null
+    const query = this.searchInput ? this.searchInput.value..split(' ').join('') : '';
+    return type === 'Blog' && author.toLowerCase() !== query.split(' ').join('').toLowerCase() ? <div><img style={styles.resteemedImage} src={resteemed} alt="Resteemd" />Resteemed</div> : null
   }
 
   renderPostMetaData(post){
