@@ -69,9 +69,9 @@ class App extends Component {
   }
 
   getQueryDisplay(){
-    const query = this.searchInput ? this.searchInput.value.trim() : '';
+    const query = this.searchInput ? this.searchInput.value : '';
 
-    return this.state.type === "Blog" && query.charAt(0) !== '@' ? `@${query}` : query;
+    return this.state.type === "Blog" && query.charAt(0) !== '@' ? <span style={styles.bold}>@{query.replace(' ', '').trim()}</span> : query.trim();
   }
 
   doSearch(){
@@ -99,10 +99,16 @@ class App extends Component {
 
   searchSteemit(){
     const { type } = this.state;
-    const query = this.searchInput.value.trim();
+    const originalQuery = this.searchInput.value;
+    const query = type === 'Blog'
+      ? this.searchInput.value.replace(' ', '').trim()
+      : this.searchInput.value.trim()
+
+    this.searchInput.value = "Searching...";
     const queryArray = query.split(" ")
     let posts = [];
     const total = queryArray.length;
+
     queryArray.forEach((q, i) => {
       if(q !== " "){
         try{
@@ -131,9 +137,11 @@ class App extends Component {
                 : posts = posts.sort((a,b) => this.sortPostsByTags(a,b))
 
               if(i === total - 1){
+                this.searchInput.value = originalQuery;
                 this.setState({lastQuery: q, loading: false, posts: posts});
                 this.forceUpdate();
                 this.canSearch = true;
+                this.searchInput.focus();
               }
           });
         }catch(e){
@@ -303,7 +311,7 @@ class App extends Component {
               post.tags && post.tags[0]
                 ? <div style={styles.tagButtons}>{ post.tags.map(tag => <span
                   key={tag}
-                  style={{...styles.button, ...this.state.query.split(" ").includes(tag)
+                  style={{...styles.button, ...this.searchInput.value.split(" ").includes(tag)
                     ? styles.selectedButton
                     : {}}}
                   onClick={() => {
@@ -337,15 +345,13 @@ class App extends Component {
             ? this.state.type === 'Blog'
               ? this.getUserLoadingMessage()
               : this.getNonUserLoadingMessage()
-            : <span>Loading {this.getTypeDisplay()} posts</span>
+            : <span>Searching for {this.getTypeDisplay()} posts</span>
         }
     </div>
     return this.loadingMessage;
   }
 
   getNotFoundMessageDisplay(){
-    // this needs to be refactored to move found message into get Found message
-    this.foundMessage = <div>{this.getTypeDisplay()} posts {this.getRefreshImage()}</div>;
     return this.state.query
       ? this.getNotFoundMessage()
       : this.foundMessage
@@ -370,13 +376,15 @@ class App extends Component {
   }
 
   getFoundMessage(){
-    this.foundMessage = this.state.type === 'Blog'
+    if(this.searchInput && this.searchInput.value.replace(' ', '') === ''){
+      return <div>{this.getTypeDisplay()} posts {this.getRefreshImage()}</div>;
+    }
+
+    return this.state.type === 'Blog'
       ? <div>Viewing the latest posts by {this.getQueryDisplay()} {this.getRefreshImage()}</div>
       : <div>
           Viewing results for <span style={styles.bold}>{this.state.type === "Created" ? "new" : this.state.type.toLowerCase()}</span> posts tagged with <span style={{fontWeight: "bold"}}>{this.getQueryDisplay()}</span> {this.getRefreshImage()}
         </div>
-
-    return this.foundMessage;
   }
 
   getLoadingImage(){
@@ -398,10 +406,8 @@ class App extends Component {
                 {this.getLoadingMessage()}
                 {this.getLoadingImage()}
               </div>
-              : this.state.query && Array.isArray(this.state.posts) && this.state.posts.length
-                ? this.state.query === this.state.lastQuery
-                  ? this.getFoundMessage()
-                  : this.foundMessage
+              : Array.isArray(this.state.posts) && this.state.posts.length
+                ? this.getFoundMessage()
                 : this.getNotFoundMessageDisplay()
           }
         </div>
@@ -422,11 +428,12 @@ class App extends Component {
         </span>
         <span>
             <input
+              disabled={this.state.loading}
               onKeyDown={(e) => this.handleSearchInputKeyDown(e)}
               ref={(input) => { this.searchInput = input; }}
               style={styles.searchInput}
               type="text"
-              placeholder="Search..." />
+              placeholder={'Search'} />
             {this.renderPostTypeButtons()}
             {this.renderNSFWToggle()}
         <span style={styles.author}>
