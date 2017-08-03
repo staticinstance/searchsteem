@@ -71,7 +71,7 @@ class App extends Component {
   getQueryDisplay(){
     const query = this.searchInput ? this.searchInput.value : '';
 
-    return this.state.type === "Blog" && query.charAt(0) !== '@' ? <span style={styles.bold}>@{query.toLowerCase().replace(' ', '').trim()}</span> : query.trim();
+    return this.state.type === "Blog" && query.charAt(0) !== '@' ? <span style={styles.bold}>@{query.toLowerCase().split(' ').join('')}</span> : query.trim();
   }
 
   doSearch(){
