@@ -44,7 +44,12 @@ class App extends Component {
       b: 0,
     }
 
-    this.state.query.split(" ").forEach(tag => {
+    const query = `${this.state.query.trim().toLowerCase()} ${this.state.query.trim().toLowerCase().split(' ').join('')}`;
+    query.split(' ')
+    .forEach(tag => {
+      if(this.getTagsFromPost(a) && this.getTagsFromPost(a).includes(tag) && tag === this.state.query.trim().toLowerCase().split(' ').join('')){
+        totals.a = 10000000;
+      }
       if(this.getTagsFromPost(a) && this.getTagsFromPost(a).includes(tag)){
         totals.a++;
       }
@@ -83,7 +88,14 @@ class App extends Component {
   }
 
   doSearch(){
-    const query = this.state.type === "Blog"
+    const { type } = this.state;
+
+    if (type === "Blog" && this.squashQuery() === '') {
+      alert('Please enter a username or select a different type of search');
+      return;
+    }
+
+    const query = type === "Blog"
       ? this.searchInput.value.replace(" ", "").replace(/([^a-zA-Z])+/i, "")
       : this.searchInput.value
     this.setState({
@@ -105,6 +117,10 @@ class App extends Component {
     }
   }
 
+  squashQuery(){
+    return this.searchInput.value.trim().toLowerCase().split(' ').join('');
+  }
+
   searchSteemit(){
     const { type } = this.state;
     const originalQuery = this.searchInput.value;
@@ -116,8 +132,11 @@ class App extends Component {
 
     //add all as one tag in case it's a username
     if(type !== 'Blog'){
-      queryArray.push(this.searchInput.value.replace(' ', '').trim())
+      queryArray.push(this.squashQuery())
     }
+
+    queryArray.push(this.squashQuery());
+
 
     this.searchInput.value = "Searching...";
     let posts = [];
@@ -168,8 +187,7 @@ class App extends Component {
     this.setState({
       query: this.searchInput.value,
       type: value
-    });
-    this.doSearch();
+    }, ()=>this.doSearch());
   }
 
   toggleNSFW(){
@@ -492,9 +510,7 @@ class App extends Component {
       <div title={this.getTypeButtonTitle("User")} style={{...styles.button, ...this.isTypeSelected('Blog')
         ? styles.selectedButton
         : {}}}
-        onClick={()=> !this.searchInput.value.trim()
-          ? alert("Please enter a username")
-          : this.handleTypeChange("Blog")}>User</div>
+        onClick={()=>this.handleTypeChange("Blog")}>User</div>
       <div title={this.getTypeButtonTitle("New")} style={{...styles.button, ...this.isTypeSelected('Created')
         ? styles.selectedButton
         : {}}}
